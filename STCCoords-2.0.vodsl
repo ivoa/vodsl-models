@@ -1,0 +1,383 @@
+
+model coords (2.0) "
+          TODO : Missing description : please, update your UML model asap.
+        "
+     
+ author "Arnold Rots, Mark Cresitello-Dittmar"
+       include "IVOA.vodsl"
+     
+       include "STCCoordSys-2.0.vodsl"
+     
+abstract otype DerivedCoordinate  ""
+  {   
+  }
+
+package domain  ""
+{
+      
+package generic  ""
+{
+      
+otype Measurement  -> DerivedCoordinate ""
+  {   
+        coord: coordsys:domain.generic.GenericCoord   "";
+        error : domain.generic.Error @*  as composition "";
+  }
+
+abstract otype Error  ""
+  {   
+  }
+
+otype StatisticalError  -> domain.generic.Error ""
+  {   
+        statError: dtypes.Uncertainty1D   "";
+  }
+
+otype SystematicError  -> domain.generic.Error ""
+  {   
+        sysError: dtypes.Uncertainty1D   "";
+  }
+
+otype RandomError  -> domain.generic.Error ""
+  {   
+        randError: dtypes.Uncertainty1D   "";
+  }
+
+otype Resolution  -> domain.generic.Error ""
+  {   
+        res: dtypes.Uncertainty1D   "";
+  }
+
+}
+  
+package spatial  ""
+{
+      
+abstract otype Position  -> DerivedCoordinate ""
+  {   
+  }
+
+otype Position1D  -> domain.spatial.Position ""
+  {   
+        coord: coordsys:domain.spatial.SpatialCoord   "";
+        error : domain.spatial.Error1D @*  as composition "";
+  }
+
+otype Position2D  -> domain.spatial.Position ""
+  {   
+        coord: coordsys:domain.spatial.SpatialCoord @[2..2]  "";
+        error : domain.spatial.Error2D @*  as composition "";
+  }
+
+otype Position3D  -> domain.spatial.Position ""
+  {   
+        coord: coordsys:domain.spatial.SpatialCoord @[3..3]  "";
+        error : domain.spatial.Error3D @*  as composition "";
+  }
+
+abstract otype Error1D  ""
+  {   
+  }
+
+otype StatisticalError1D  -> domain.spatial.Error1D ""
+  {   
+        statError: dtypes.Uncertainty1D   "";
+  }
+
+otype SystematicError1D  -> domain.spatial.Error1D ""
+  {   
+        sysError: dtypes.Uncertainty1D   "";
+  }
+
+otype RandomError1D  -> domain.spatial.Error1D ""
+  {   
+        randError: dtypes.Uncertainty1D   "";
+  }
+
+otype Resolution1D  -> domain.spatial.Error1D ""
+  {   
+        res: dtypes.Uncertainty1D   "";
+  }
+
+abstract otype Error2D  ""
+  {   
+  }
+
+otype StatisticalError2D  -> domain.spatial.Error2D ""
+  {   
+        statError: dtypes.Uncertainty2D   "";
+  }
+
+otype SystematicError2D  -> domain.spatial.Error2D ""
+  {   
+        sysError: dtypes.Uncertainty2D   "";
+  }
+
+otype RandomError2D  -> domain.spatial.Error2D ""
+  {   
+        randError: dtypes.Uncertainty2D   "";
+  }
+
+otype Resolution2D  -> domain.spatial.Error2D ""
+  {   
+        res: dtypes.Uncertainty2D   "";
+  }
+
+abstract otype Error3D  ""
+  {   
+  }
+
+otype StatisticalError3D  -> domain.spatial.Error3D ""
+  {   
+        statError: dtypes.Uncertainty3D   "";
+  }
+
+otype SystematicError3D  -> domain.spatial.Error3D ""
+  {   
+        sysError: dtypes.Uncertainty3D   "";
+  }
+
+otype RandomError3D  -> domain.spatial.Error3D ""
+  {   
+        randError: dtypes.Uncertainty3D   "";
+  }
+
+otype Resolution3D  -> domain.spatial.Error3D ""
+  {   
+        res: dtypes.Uncertainty3D   "";
+  }
+
+}
+  
+package spectral  ""
+{
+      
+abstract otype DerivedSpectralCoordinate  -> DerivedCoordinate ""
+  {   
+        coord: coordsys:domain.spectral.SpectralCoord   "";
+        error : domain.spectral.Error @*  as composition "";
+  }
+
+otype Energy  -> domain.spectral.DerivedSpectralCoordinate ""
+  {   
+  }
+
+otype Frequency  -> domain.spectral.DerivedSpectralCoordinate ""
+  {   
+  }
+
+otype Wavelength  -> domain.spectral.DerivedSpectralCoordinate ""
+  {   
+  }
+
+abstract otype Error  ""
+  {   
+  }
+
+otype StatisticalError  -> domain.spectral.Error ""
+  {   
+        statError: dtypes.Uncertainty1D   "";
+  }
+
+otype SystematicError  -> domain.spectral.Error ""
+  {   
+        sysError: dtypes.Uncertainty1D   "";
+  }
+
+otype RandomError  -> domain.spectral.Error ""
+  {   
+        randError: dtypes.Uncertainty1D   "";
+  }
+
+otype Resolution  -> domain.spectral.Error ""
+  {   
+        res: dtypes.Uncertainty1D   "";
+  }
+
+}
+  
+package temporal  ""
+{
+      
+otype Time  -> DerivedCoordinate ""
+  {   
+        coord: coordsys:domain.temporal.TimeCoord   "";
+        error : domain.temporal.Error @*  as composition "";
+  }
+
+abstract otype Error  ""
+  {   
+  }
+
+otype StatisticalError  -> domain.temporal.Error ""
+  {   
+        statError: dtypes.Uncertainty1D   "";
+  }
+
+otype SystematicError  -> domain.temporal.Error ""
+  {   
+        sysError: dtypes.Uncertainty1D   "";
+  }
+
+otype RandomError  -> domain.temporal.Error ""
+  {   
+        randError: dtypes.Uncertainty1D   "";
+  }
+
+otype Resolution  -> domain.temporal.Error ""
+  {   
+        res: dtypes.Uncertainty1D   "";
+  }
+
+}
+  
+package polarization  ""
+{
+      
+abstract otype DerivedPolarizationCoordinate  -> DerivedCoordinate ""
+  {   
+  }
+
+otype Stokes  -> domain.polarization.DerivedPolarizationCoordinate ""
+  {   
+        coord: coordsys:domain.polarization.PolStokesCoord   "";
+  }
+
+otype Circular  -> domain.polarization.DerivedPolarizationCoordinate ""
+  {   
+        coord: coordsys:domain.polarization.PolCircularCoord   "";
+  }
+
+otype Linear  -> domain.polarization.DerivedPolarizationCoordinate ""
+  {   
+        coord: coordsys:domain.polarization.PolLinearCoord   "";
+  }
+
+otype Vector  -> domain.polarization.DerivedPolarizationCoordinate ""
+  {   
+        coord: coordsys:domain.polarization.PolVectorCoord   "";
+  }
+
+}
+  
+}
+  
+package dtypes  ""
+{
+      
+abstract dtype Uncertainty  ""
+  {   
+  }
+
+abstract dtype Uncertainty1D  -> dtypes.Uncertainty ""
+  {   
+  }
+
+abstract dtype Uncertainty2D  -> dtypes.Uncertainty ""
+  {   
+  }
+
+abstract dtype Uncertainty3D  -> dtypes.Uncertainty ""
+  {   
+  }
+
+dtype Symmetrical1D  -> dtypes.Uncertainty1D ""
+  {   
+        radius: ivoa:RealQuantity   "";
+  }
+
+dtype Asymmetrical1D  -> dtypes.Uncertainty1D ""
+  {   
+        plus: ivoa:RealQuantity   "";
+        minus: ivoa:RealQuantity   "";
+  }
+
+dtype Bounds1D  -> dtypes.Uncertainty1D ""
+  {   
+        loLimit: ivoa:RealQuantity   "";
+        hiLimit: ivoa:RealQuantity   "";
+  }
+
+dtype Symmetrical2D  -> dtypes.Uncertainty2D ""
+  {   
+        radius: ivoa:RealQuantity   "";
+  }
+
+dtype Asymmetrical2D  -> dtypes.Uncertainty2D ""
+  {   
+        plus: ivoa:RealQuantity @[2..2]  "";
+        minus: ivoa:RealQuantity @[2..2]  "";
+  }
+
+dtype Bounds2D  -> dtypes.Uncertainty2D ""
+  {   
+        loLimit: ivoa:RealQuantity @[2..2]  "";
+        hiLimit: ivoa:RealQuantity @[2..2]  "";
+  }
+
+dtype Symmetrical3D  -> dtypes.Uncertainty3D ""
+  {   
+        radius: ivoa:RealQuantity   "";
+  }
+
+dtype Asymmetrical3D  -> dtypes.Uncertainty3D ""
+  {   
+        plus: ivoa:RealQuantity @[3..3]  "";
+        minus: ivoa:RealQuantity @[3..3]  "";
+  }
+
+dtype Bounds3D  -> dtypes.Uncertainty3D ""
+  {   
+        loLimit: ivoa:RealQuantity @[2..2]  "";
+        hiLimit: ivoa:RealQuantity @[2..2]  "";
+  }
+
+dtype Ellipse  -> dtypes.Uncertainty2D ""
+  {   
+        semiAxis: ivoa:RealQuantity @[2..2]  "";
+        posAngle: ivoa:RealQuantity   "";
+  }
+
+dtype Ellipsoid  -> dtypes.Uncertainty3D ""
+  {   
+        semiAxis: ivoa:RealQuantity @[3..3]  "";
+        posAngle: ivoa:RealQuantity @[2..2]  "";
+  }
+
+abstract dtype Matrix  ""
+  {   
+  }
+
+dtype Matrix2x2  -> dtypes.Matrix ""
+  {   
+        m11: ivoa:real   "";
+        m12: ivoa:real   "";
+        m21: ivoa:real   "";
+        m22: ivoa:real   "";
+  }
+
+dtype Matrix3x3  -> dtypes.Matrix ""
+  {   
+        m11: ivoa:real   "";
+        m12: ivoa:real   "";
+        m13: ivoa:real   "";
+        m21: ivoa:real   "";
+        m22: ivoa:real   "";
+        m23: ivoa:real   "";
+        m31: ivoa:real   "";
+        m32: ivoa:real   "";
+        m33: ivoa:real   "";
+  }
+
+dtype CovarianceMatrix2D  -> dtypes.Uncertainty2D ""
+  {   
+        matrix: dtypes.Matrix2x2   "";
+  }
+
+dtype CovarianceMatrix3D  -> dtypes.Uncertainty3D ""
+  {   
+        matrix: dtypes.Matrix3x3   "";
+  }
+
+}
+  

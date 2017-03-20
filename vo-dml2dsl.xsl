@@ -48,7 +48,7 @@ Paul Harrison
 model <xsl:value-of select="$modname"/> (<xsl:value-of select="version"/>) "<xsl:value-of select="description"/>"
      <xsl:apply-templates select="author" />
 	  <xsl:apply-templates select="import" />
-	  <xsl:apply-templates select="* except (import|version|description|vodml-id|lastModified|name|title|author)"/>
+	  <xsl:apply-templates select="* except (import|version|description|vodml-id|lastModified|name|title|author|previousVersion)"/>
   </xsl:template>
  
  <xsl:template match="import">
@@ -67,7 +67,7 @@ model <xsl:value-of select="$modname"/> (<xsl:value-of select="version"/>) "<xsl
 </xsl:template>
 
   <xsl:template match="package">
-package <xsl:value-of select="concat(vodml-id,' ')"/> <xsl:apply-templates select= "description"/>
+package <xsl:value-of select="concat(name,' ')"/> <xsl:apply-templates select= "description"/>
 {
       <xsl:apply-templates select="* except (vodml-id|description|name)" />
 }
@@ -76,14 +76,16 @@ package <xsl:value-of select="concat(vodml-id,' ')"/> <xsl:apply-templates selec
   <xsl:template match="primitiveType">
     primitive <xsl:value-of select="concat(vodml-id, ' ')"/> <xsl:apply-templates select="description"/>
   </xsl:template>  
-  
-  <xsl:template match='vodml-ref'> <!-- remove the local namespace -->
+
+<!-- remove the local namespace -->  
+  <xsl:template match='vodml-ref'> 
      <xsl:choose>
         <xsl:when test="substring-before( .,':') = $modname">
            <xsl:value-of select="substring-after(.,':')"/>
         </xsl:when>
         <xsl:otherwise>
-            <xsl:value-of select="translate(.,':','.')"/>
+           <!-- <xsl:value-of select="translate(.,':','.')"/> --> 
+           <xsl:value-of select="."/>
         </xsl:otherwise>
      </xsl:choose>
      
@@ -162,7 +164,7 @@ enum <xsl:value-of select="name"/><xsl:text> </xsl:text>
 </xsl:if>
 </xsl:template>
 
-<xsl:template match="collection|container"> <!-- are they both present? -->
+<xsl:template match="composition|container"> <!-- are they both present? -->
   <xsl:text>
         </xsl:text>
   <xsl:value-of select="concat(name, ' : ')"/> 

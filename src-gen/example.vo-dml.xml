@@ -7,7 +7,7 @@
       <title>TBD</title>
       <author>Paul Harrison</author>
       <version>0.1</version>
-      <lastModified>2016-03-07T08:46:31Z</lastModified>
+      <lastModified>2017-03-20T15:50:57Z</lastModified>
       <import>
         <name>tbd</name><!--should be able to work out from the included model -->
         <url>IVOA.vodsl</url>
@@ -27,12 +27,12 @@
                           <name>fq</name>
                           <description></description>	    
                            <extends>
-                              <vodml-ref>ivoa:quantity.AtomicValue</vodml-ref>
+                              <vodml-ref>ivoa:Quantity</vodml-ref>
                            </extends>
                         <attribute>
                           <vodml-id>apackage.fq.value</vodml-id>
                           <name>value</name>
-                          <description>a new float</description>	    
+                          <description>a new boolean</description>	    
                           <datatype>
                              <vodml-ref>ivoa:boolean</vodml-ref>
                           </datatype>
@@ -51,7 +51,7 @@
                              <name>bv</name>
                              <description>Description</description>	    
                              <datatype>
-                                <vodml-ref>ivoa:boolean</vodml-ref>
+                                <vodml-ref>ivoa:anyURI</vodml-ref>
                              </datatype>
                              <multiplicity>
                                <minOccurs>1</minOccurs>
@@ -83,7 +83,7 @@
                              <name>sv</name>
                              <description></description>	    
                              <datatype>
-                                <vodml-ref>ivoa:quantity.RealQuantity</vodml-ref>
+                                <vodml-ref>ivoa:RealQuantity</vodml-ref>
                              </datatype>
                              <multiplicity>
                                <minOccurs>1</minOccurs>
@@ -107,7 +107,7 @@
                                <maxOccurs>0</maxOccurs>
                              </multiplicity>
                            </attribute>
-                           <collection>
+                           <composition>
                              <vodml-id>apackage.another.f2</vodml-id>
                              <name>f2</name>
                              <description></description>	    
@@ -118,7 +118,7 @@
                                <minOccurs>1</minOccurs>
                                <maxOccurs>1</maxOccurs>
                              </multiplicity>
-                           </collection>
+                           </composition>
                         </objectType>
                         <package>
                            <vodml-id>apackage.nestedpackage</vodml-id>
@@ -128,7 +128,7 @@
                                        <vodml-id>apackage.nestedpackage.another</vodml-id>
                                        <name>another</name>
                                        <description></description>	    
-                                       <collection>
+                                       <composition>
                                          <vodml-id>apackage.nestedpackage.another.cc</vodml-id>
                                          <name>cc</name>
                                          <description></description>	    
@@ -139,7 +139,7 @@
                                            <minOccurs>1</minOccurs>
                                            <maxOccurs>1</maxOccurs>
                                          </multiplicity>
-                                       </collection>
+                                       </composition>
                                        <reference>
                                          <vodml-id>apackage.nestedpackage.another.rf</vodml-id>
                                          <name>rf</name>

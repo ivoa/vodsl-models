@@ -5,8 +5,8 @@ primitive angle "a new primitive"
 
 package apackage "example package"
 {
-		dtype fq -> ivoa:quantity.AtomicValue {
-			value : ivoa:boolean   "a new float";
+		dtype fq -> ivoa:Quantity {
+			value : ivoa:boolean   "a new boolean";
 		}
 		abstract otype base {
 		    bv : ivoa:anyURI  "Description";
@@ -14,7 +14,7 @@ package apackage "example package"
 		                                       re-use reserved word.*/		    
 		}		
 		otype derived -> base {
-			sv : ivoa:quantity.RealQuantity "";
+			sv : ivoa:RealQuantity "";
 		}
 		otype another {
 			f1 : apackage.fq @[6] "an array";

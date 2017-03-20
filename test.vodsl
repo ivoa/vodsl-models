@@ -6,7 +6,7 @@ include "IVOA.vodsl"
 
 package topl "top level package"
 {
-		dtype fq -> ivoa:quantity.AtomicValue {
+		dtype fq -> ivoa:Quantity {
 		value : real "a new float";
 		value2 : ivoa:real "ivoa float - fully qualified"; 
 		}
@@ -17,11 +17,11 @@ package topl "top level package"
 				dtype scopes {
 					f0 : real "from the uppermost level in the namespace";
 					f1 : primtop "in scope without qualification as nested";
-					f2 : ivoa:quantity.IntegerQuantity "an example from included sub namespace";
-					f3 : ivoa:Identity "from the imported ivoa namespace";
+					f2 : ivoa:IntegerQuantity "an example from included sub namespace";
+					f3 : ivoa:anyURI "from the imported ivoa namespace";
 					f3b: Identity "from local definition";
 					f4 : daft "not a proper type anywhere - should be an error";
-					f5 : ivoa:quantity.AtomicValue "this is an abstract type";
+					f5 : ivoa:Quantity "this is an abstract type";
 					f6 : sprim "should be an error as needs a package reference";
 					f7 : topl.p2.sprim  "this is how it should be referred to";
 					f8 : obscore:Access "should not be in scope (not imported)";
@@ -48,7 +48,7 @@ package topl "top level package"
 					f: real "";
 				}
 
-				dtype derived -> ivoa:quantity.AtomicValue {
+				dtype derived -> ivoa:Quantity{
 					d1 : ivoa:integer "";
 					s1 : scopes "in same package - does not need qualification";
 				}

@@ -1,0 +1,190 @@
+
+model RegTAP (0.1) "This is the data model for describing simulations, the code that produced them and other related resources. It is to be used by protocol specifications for discovering theory data products and web services with which these can be accessed. An example of these are the Simulation Database (SimDB) spec and the family of protocols to be defined in the Simulation Data Access Layer (SimDAL).
+This data model is a specification of the IVOA Theory Interest Group. 
+"
+     
+ author "Gerard Lemson"
+ author "Laurent Bourge"
+ author "Rick Wagner"
+       include "IVOA.vodsl"
+     
+package rr  ""
+{
+      
+enum HTTPQueryType  ""
+{
+GET  "",
+POST  ""
+}
+
+otype CapabilityDetailDefinition  ""
+  {   
+        name:  ivoa:string   "";
+        description:  ivoa:string   "";
+  }
+
+otype StandardResource  -> rr.resource ""
+  {   
+        detail : rr.CapabilityDetailDefinition @*  as composition "";
+  }
+
+otype accessurl  "Base) URLs that a client uses to access the service. How this URL is to be interpreted and used depends on the specific interface type"
+  {   
+        flag:  ivoa:string   "A flag indicating whether this should be interpreted as a base URL, a full URL, or a URL to a directory that will produce a listing of files";
+        url:  ivoa:anyURI   "The URL at which the interface is found";
+  }
+
+otype capability  "Descriptions of what a resource does and how to use it (context-specific behavior and interfaces)."
+  {   
+        cap_index: ivoa:integer   "Running number of this capability within the resource";
+        cap_type:  ivoa:string  @?   "The type of capability covered here";
+        cap_description:  ivoa:string  @?   "A human-readable description of what this capability provides as part of the over-all service";
+        standard_id: ivoa:anyURI  @?   "A URI for a standard this capability conforms to";
+        detail : rr.capability_detail @*  as composition "";
+        c_interface : rr.capability_interface @*  as composition "";
+        validation : rr.capabilityvalidation @*  as composition "";
+        standard  @?  references rr.StandardResource "";
+  }
+
+otype capability_detail  "A table giving values for a capability's special properties. These are organized by utype; the concrete meaning of each detail can be obtained from the standard the capability follows"
+  {   
+        detail_utype:  ivoa:string  @?   "utype of the capability detail";
+        detail_value:  ivoa:string   "value of the capability detail";
+        detailDefinition  references rr.CapabilityDetailDefinition "";
+  }
+
+otype capability_interface  "Interfaces of capabilities; this gives you where to actually use a certain capability"
+  {   
+        intf_type:  ivoa:string  @?   "The type of the interface (Web-Browser, ParamHTTP, etc";
+        intf_role:  ivoa:string  @?   "A tag name the identifies the role the interface plays in the particular capability. If the value is equal to 'std' or begins with 'std:', then the interface refers to a standard interface defined by the standard referred to by the capability's standardID attribute.";
+        std_version:  ivoa:string  @?   "The version of a standard interface specification that this interface complies with. When the interface is provided in the context of a Capability element, then the standard being refered to is the one identified by the Capability's standardID element. If the standardID is not provided, the meaning of this attribute is undefined.</";
+        query_type: rr.HTTPQueryType   "The type of HTTP request, either GET or POST";
+        result_type:  ivoa:string  @?   "The MIME type of a document returned in the HTTP response";
+        wsdl_url: ivoa:anyURI  @?   "The location of the WSDL that describes this Web Service. If not provided, the location is assumed to be the accessURL with '?wsdl' appended";
+        accessurl : rr.accessurl as composition "";
+        parameter : rr.intf_param @*  as composition "";
+  }
+
+otype capabilityvalidation  "Validation levels for capabilities"
+  {   
+        validatedBy: rr.capability_detail   "The IVOA ID of the registry or organisation that assigned the validation level";
+        level:  ivoa:string   "numeric grade describing the quality of the resource description, when applicable, to be used to indicate the confidence an end-user can put in the resource as part of a VO application or research study";
+  }
+
+otype creator  "Entities (e.g. persons or organisations) primarily responsible for creating resources"
+  {   
+        logo: ivoa:anyURI  @?   "URL pointing to a graphical logo, which may be used to help identify the information source";
+        creator_ivoid: ivoa:anyURI   "vor:Resource.curation.creator.logo";
+        creator_name:  ivoa:string   "Name of the creator";
+  }
+
+otype intf_param  "A description of a input parameter that can be provided as a name=value argument to the service"
+  {   
+        description:  ivoa:string  @?   "A free-text description of the column's contents";
+        name:  ivoa:string   "The name of the column (GL: parameter?)";
+        ucd:  ivoa:string  @?   "A unified content descriptor that describes the scientific content of the parameter";
+        unit:  ivoa:string  @?   "The unit associated with all values in the parameter";
+        utype:  ivoa:string  @?   "An identifier for a role in a data model that the data in this parameter represents";
+        flag:  ivoa:string  @?   "comma-separated keywords representing traits of the column. Recognized values include 'indexed', 'primary', and 'nullable'";
+        std: ivoa:integer  @?   "If 1, the meaning and use of this parameter is reserved and defined by a standard model. If 0, it represents a database-specific parameter that effectively extends beyond the standard. If not provided, then the value is unknown";
+        datatype:  ivoa:string  @?   "The type of the data contained in the parameter";
+        form:  ivoa:string  @?   "An indication of whether this parameter is required to be provided for the application or service to work properly";
+  }
+
+otype rdate  "date associated with an event in the life cycle of the resource. This will typically be associated with the creation or availability (i.e., most recent release or version) of the resource. Use the role attribute to clarify."
+  {   
+        date_value:  ivoa:datetime   "A date associated with an event in the life cycle of the resource";
+        value_role:  ivoa:string   "A string indicating what the date refers to";
+  }
+
+otype relatinship  "Descriptions of relationships between resources"
+  {   
+        relationship_type:  ivoa:string  @?   "The named type of relationship; this can be mirror-of, service-for, served-by, derived-from, related-to, or something user-defined";
+        related_id: ivoa:anyURI   "The URI form of the IVOA identifier for the resource refered to";
+        related_name:  ivoa:string  @?   "The name of resource that this resource is related to";
+  }
+
+otype resource  "The resources, i.e., services, data collections, organizations, etc., present in this registry."
+  {   
+        ivoid: ivoa:anyURI   "Id of the resource created by this entity";
+        resource_type:  ivoa:string  @?   "Resource type (something like Service, Organization, etc)";
+        created: ivoa:datetime  @?   "The UTC date and time this resource metadata description was created. This timestamp must not be in the future. This time is not required to be accurate; it should be at least accurate to the day. Any insignificant time fields should be set to zero.";
+        shortname:  ivoa:string  @?   "a short name or abbreviation given to something. This name will be used where brief annotations for the resource name are required. Applications may use to refer to this resource in a compact display. One word or a few letters is recommended. No more than sixteen characters are allowed";
+        title:  ivoa:string  @?   "the full name given to the resource";
+        updated: ivoa:datetime  @?   "The UTC date this resource metadata description was last updated. This timestamp must not be in the future. This time is not required to be accurate; it should be at least accurate to the day. Any insignificant time fields should be set to zero";
+        contentlevel:  ivoa:string  @?   "Description of the content level or intended audience";
+        res_description:  ivoa:string  @?   "An account of the nature of the resource";
+        referenceurl: ivoa:anyURI  @?   "URL pointing to a human-readable document describing this resource.";
+        contact_address:  ivoa:string  @?   "The contact mailing address";
+        contact_telephone:  ivoa:string  @?   "The contact telephone number";
+        contact_ivoid: ivoa:anyURI  @?   "An IVOA identifier for the point of contact for the resource";
+        contact_name:  ivoa:string  @?   "The name or title of the contact person";
+        subject:  ivoa:string  @?   "topics, object types, or other descriptive keywords about the resource (comma separated)";
+        content_type:  ivoa:string  @?   "Nature or genre of the content of the resource";
+        source_format:  ivoa:string  @?   "The format of source_value. Recognized values include 'bibcode', referring to a standard astronomical bibcode (http://cdsweb.u-strasbg.fr/simbad/refcode.html)";
+        source_value:  ivoa:string  @?   "a bibliographic reference from which the present resource is derived or extracted";
+        version:  ivoa:string  @?   "Label associated with creation or availablilty of a version of a resource";
+        publisher_ivoid: ivoa:anyURI  @?   "The URI form of the IVOA identifier for the publisher of the entity named in publisher_name";
+        publisher_name:  ivoa:string  @?   "The name of the publishing entity";
+        regionofregard:  ivoa:real  @?   "A single numeric value representing the angle, given in decimal degrees, by which a positional query against this resource should be 'blurred' in order to get an appropriate match";
+        stc_profile:  ivoa:string  @?   "An STC-S representation of the location of the resource's data (or behavior on data) potentially on multiple axes";
+        covered_region:  ivoa:string  @?   "An ADQL-queriable geometry specification approximating the spatial extent of the objects covered in the service";
+        waveband:  ivoa:string  @?   "A comma separated list of regions of the electro-magnetic spectrum that the resource's spectral coverage overlaps with";
+        footprint_ivoid: ivoa:anyURI  @?   "The URI form of the IVOA identifier for the service describing the capability referred to by this element";
+        footpirnt_url: ivoa:anyURI  @?   "A URL of a footprint service for retrieving precise and up-to-date description of coverage";
+        rights:  ivoa:string  @?   "Information about rights held in and over the resource";
+        harvestedOfrom: ivoa:anyURI  @?   "IVORN of the registry this record came from";
+        capability : rr.capability @*  as composition "";
+        tableschema : rr.tableschema @?  as composition "";
+        tabes : rr.rsctable @*  as composition "";
+        relationship : rr.relatinship @*  as composition "";
+        creator : rr.creator @?  as composition "";
+        validation : rr.resourcevalidation @*  as composition "";
+        date : rr.rdate @*  as composition "";
+  }
+
+otype resourcevalidation  "Validation levels for resources"
+  {   
+        validatedBy: ivoa:anyURI   "The IVOA ID of the registry or organisation that assigned the validation level";
+        level:  ivoa:integer   "A numeric grade describing the quality of the resource description, when applicable, to be used to indicate the confidence an end-user can put in the resource as part of a VO application or research study";
+  }
+
+otype rsctable  "A description of one a table pertaining to the resource"
+  {   
+        table_description:  ivoa:string  @?   "A free-text description of the table's contents";
+        table_name:  ivoa:string   "The fully qualified name of the table. This name should include all catalog or schema prefixes needed to sufficiently uniquely distinguish it in a query";
+        table_index: ivoa:integer   "An artificial counter for the tables belonging to a resource";
+        table_title:  ivoa:string  @?   "A descriptive, human-interpretable name for the table";
+        table_role:  ivoa:string  @?   "A name for the role this table plays. Recognized values include 'output', indicating this table is output from a query; 'base_table', indicating a table whose records represent the main subjects of its schema; and 'view', indicating that the table represents a useful combination or subset of other tables. Other values are allowed";
+        schema_utype:  ivoa:string  @?   "an identifier for a concept in a data model that the data in this schema as a whole represent";
+        column : rr.tablecolumn @+  as composition "";
+        schema  @?  references rr.tableschema "schema this table belongs to, if it belongs to a schema";
+  }
+
+otype tablecolumn  "Metadata on columns of tables pertaining to resources"
+  {   
+        description:  ivoa:string  @?   "A free-text description of the column's contents";
+        name:  ivoa:string   "The name of the column";
+        ucd:  ivoa:string  @?   "A unified content descriptor that describes the scientific content of the parameter";
+        unit:  ivoa:string  @?   "The unit associated with all values in the column";
+        utype:  ivoa:string  @?   "An identifier for a role in a data model that the data in this column represents";
+        flag:  ivoa:string  @?   "comma-separated keywords representing traits of the column. Recognized values include 'indexed', 'primary', and 'nullable";
+        std: ivoa:integer  @?   "If 1, the meaning and use of this parameter is reserved and defined by a standard model. If 0, it represents a database-specific parameter that effectively extends beyond the standard. If not provided, then the value is unknown";
+        datatype:  ivoa:string   "The type of the data contained in the column";
+        arraysize:  ivoa:string  @?   "The shape of the array that constitutes the value";
+        delim:  ivoa:string  @?   "the string that is used to delimit elements of an array value when arraysize is not '1'";
+        extended_schema:  ivoa:string  @?   "An identifier for the schema that the value given by the extended attribute is drawn from";
+        extended_type:  ivoa:string  @?   "The data value represented by this type can be interpreted as of a custom type identified by the value of this attribute";
+  }
+
+otype tableschema  "Tables containing the information in the IVOA registry"
+  {   
+        schema_index: ivoa:integer  @?   "A running number for the tableschema rows belonging to a resource";
+        schema_description:  ivoa:string  @?   "A free text description of the tableset explaining in general how all of the tables are related";
+        schema_name:  ivoa:string   "A name for the set of tables";
+        schema_title:  ivoa:string  @?   "A descriptive, human-interpretable name for the table set";
+        schema_utype:  ivoa:string  @?   "an identifier for a concept in a data model that the data in this schema as a whole represent";
+  }
+
+}
+  

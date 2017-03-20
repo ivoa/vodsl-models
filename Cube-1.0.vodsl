@@ -1,0 +1,97 @@
+
+model cube (1.0) "
+          TODO : Missing description : please, update your UML model asap.
+        "
+     
+ author "Mark Cresitello-Dittmar, Doug Tody, Francois Bonnarel, Omar Laurino, Mireille Louys, Arnold Rots, Jose Enrique Ruiz, Jesus Salgado, and the IVOA Data Model Working Group"
+       include "IVOA.vodsl"
+     
+       include "DatasetMetadata-1.0.vodsl"
+     
+       include "STCCoordSys-2.0.vodsl"
+     
+       include "STCCoords-2.0.vodsl"
+     
+       include "STCTrans-2.0.vodsl"
+     
+otype NDImageDataset  -> ds:experiment.ObsDataset ""
+  {   
+        image  @+  references NDImage "";
+  }
+
+otype NDImage  -> PixelatedDataProduct ""
+  {   
+        data : Voxel @*  as composition "";
+  }
+
+otype SparseCubeDataset  -> ds:experiment.ObsDataset ""
+  {   
+        cube  @+  references SparseCube "";
+  }
+
+otype SparseCube  -> PointDataProduct ""
+  {   
+        data : NDPoint @*  as composition "";
+  }
+
+abstract otype DataProduct  ""
+  {   
+        coordSys : CoordSys @+  as composition "";
+        mappings : Mappings @?  as composition "";
+        observable : Observable @*  as composition "";
+  }
+
+abstract otype PixelatedDataProduct  -> DataProduct ""
+  {   
+        pixelCoordSys : PixelCoordSys as composition "";
+  }
+
+abstract otype PointDataProduct  -> DataProduct ""
+  {   
+  }
+
+otype CoordSys  ""
+  {   
+        instref  references coordsys:CoordSys "";
+  }
+
+otype PixelCoordSys  ""
+  {   
+        instref  references coordsys:PixelCoordSystem "";
+  }
+
+otype Mappings  ""
+  {   
+        instref  references trans:Mappings "";
+  }
+
+otype Voxel  ""
+  {   
+        pixelAxis : PixelAxis @+  as composition "";
+        dependentAxis : DependentAxis as composition "";
+  }
+
+otype NDPoint  ""
+  {   
+        axis : DataAxis @*  as composition "";
+  }
+
+otype Observable  ""
+  {   
+        instref  references coords:DerivedCoordinate "";
+  }
+
+otype DataAxis  ""
+  {   
+        observable  references Observable "";
+  }
+
+otype PixelAxis  ""
+  {   
+        pixelCoord  references coords:domain.pixel.Pixel "";
+  }
+
+otype DependentAxis  ""
+  {   
+        observable  references Observable "";
+  }

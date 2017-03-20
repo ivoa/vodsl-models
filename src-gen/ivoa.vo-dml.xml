@@ -6,7 +6,12 @@
       <description>This is the main reference data model containing primitive types used in other data models.</description> 
       <title>TBD</title>
       <version>1.0</version>
-      <lastModified>2016-03-07T08:46:31Z</lastModified>
+      <lastModified>2017-03-20T15:50:57Z</lastModified>
+      <primitiveType>
+        <vodml-id>Unit</vodml-id>
+        <name>Unit</name>
+        <description>Must conform to definition of unit in VOUnit spec.</description>	    
+      </primitiveType>
       <primitiveType>
         <vodml-id>anyURI</vodml-id>
         <name>anyURI</name>
@@ -20,12 +25,7 @@
       <primitiveType>
         <vodml-id>datetime</vodml-id>
         <name>datetime</name>
-        <description>Represents a moment in time using a date+timestamp. Coordinate reference systems must be defined by the context serialisation.</description>	    
-      </primitiveType>
-      <primitiveType>
-        <vodml-id>decimal</vodml-id>
-        <name>decimal</name>
-        <description>Represents a decimal number with exact significance such as used to denote monetary values.</description>	    
+        <description>Represents a moment in time using a date+timestamp. </description>	    
       </primitiveType>
       <primitiveType>
         <vodml-id>integer</vodml-id>
@@ -49,58 +49,60 @@
         I.e. string has value type semantics.</description>	    
       </primitiveType>
             <dataType>
-              <vodml-id>Identity</vodml-id>
-              <name>Identity</name>
-              <description>This datatype represents an identifier for an object in the data model. It consists of 3 attributes that each are assumed to work in a particular context or representation of a data model instance.</description>	    
+              <vodml-id>IntegerQuantity</vodml-id>
+              <name>IntegerQuantity</name>
+              <description>An integer number with a unit. Examples of such units that can be used for attributes are bit/byte/kiloByte etc.</description>	    
+               <extends>
+                  <vodml-ref>ivoa:Quantity</vodml-ref>
+               </extends>
             <attribute>
-              <vodml-id>Identity.id</vodml-id>
-              <name>id</name>
-              <description>The id attribute is assumed to represent an object in a database storing instances of the data model. </description>	    
+              <vodml-id>IntegerQuantity.value</vodml-id>
+              <name>value</name>
+              <description></description>	    
               <datatype>
                  <vodml-ref>ivoa:integer</vodml-ref>
               </datatype>
               <multiplicity>
-                <minOccurs>0</minOccurs>
+                <minOccurs>1</minOccurs>
                 <maxOccurs>1</maxOccurs>
               </multiplicity>
             </attribute>
+            </dataType>
+            <dataType abstract='true'>
+              <vodml-id>Quantity</vodml-id>
+              <name>Quantity</name>
+              <description>Meant to represent the value of a numerical physical quantity.  
+              Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity.
+              Ths is only allowed for these predefined ivoa types.</description>	    
             <attribute>
-              <vodml-id>Identity.xmlId</vodml-id>
-              <name>xmlId</name>
-              <description>This attribute is used to support identifing of and referring to an object in an XML document using the ID/IDREF mechanism.</description>	    
+              <vodml-id>Quantity.unit</vodml-id>
+              <name>unit</name>
+              <description></description>	    
               <datatype>
-                 <vodml-ref>ivoa:string</vodml-ref>
+                 <vodml-ref>ivoa:Unit</vodml-ref>
               </datatype>
               <multiplicity>
                 <minOccurs>0</minOccurs>
                 <maxOccurs>1</maxOccurs>
               </multiplicity>
             </attribute>
+            </dataType>
+            <dataType>
+              <vodml-id>RealQuantity</vodml-id>
+              <name>RealQuantity</name>
+              <description>A real value with a unit.</description>	    
+               <extends>
+                  <vodml-ref>ivoa:Quantity</vodml-ref>
+               </extends>
             <attribute>
-              <vodml-id>Identity.ivoId</vodml-id>
-              <name>ivoId</name>
-              <description>The ivoId attribute is assumed to represent an object in a database following the design of the data model and accessible through a standardised registration and discovery protocols.
-              It is assumed to be unique within the IVOA and its format follows (a generalisation of) the IVO Resource Identifier standard (see http://www.ivoa.net/Documents/REC/Identifiers/Identifiers-20070302.html).
-              Since the ivoId is assumed to represent the resource as registered in a standard database for the data model, it is assumed to be allocated by such a database service. This is in contrast to the use of the IVO Identifier in resource registries, where the id is assumed to be allocated by the publisher. We have the publisherDID attribute for that purpose. Also in contrast to that usage is the fact that each object in the model is assigned this identifier, not only the root resources.
-              We suggest as algorithm for assigning these ivoId to use as root the ivoId of the registered database service, and to append to this a # then the UTYPE of the element and finally its id attribute, separetd from the UTYPE by a forward slash.</description>	    
+              <vodml-id>RealQuantity.value</vodml-id>
+              <name>value</name>
+              <description></description>	    
               <datatype>
-                 <vodml-ref>ivoa:anyURI</vodml-ref>
+                 <vodml-ref>ivoa:real</vodml-ref>
               </datatype>
               <multiplicity>
-                <minOccurs>0</minOccurs>
-                <maxOccurs>1</maxOccurs>
-              </multiplicity>
-            </attribute>
-            <attribute>
-              <vodml-id>Identity.publisherDID</vodml-id>
-              <name>publisherDID</name>
-              <description>This attribute identifies an element in the context of the publisher. 
-              It is supposed to be unique in the IVO context and should likely be constrained to have the publisher's authority IVO id. This may need to be rediscussed when protocols for accessing a database built around a data model are to be designed.</description>	    
-              <datatype>
-                 <vodml-ref>ivoa:anyURI</vodml-ref>
-              </datatype>
-              <multiplicity>
-                <minOccurs>0</minOccurs>
+                <minOccurs>1</minOccurs>
                 <maxOccurs>1</maxOccurs>
               </multiplicity>
             </attribute>
@@ -135,35 +137,6 @@
             </attribute>
             </dataType>
             <dataType>
-              <vodml-id>duration</vodml-id>
-              <name>duration</name>
-              <description>Represents an interval of time from beginning to end. Is not equivalent to a simple real value indicating the number of seconds (for example). In general a custom mapping to a particular serialisation context must be provided.</description>	    
-            <attribute>
-              <vodml-id>duration._from</vodml-id>
-              <name>_from</name>
-              <description></description>	    
-              <datatype>
-                 <vodml-ref>ivoa:datetime</vodml-ref>
-              </datatype>
-              <multiplicity>
-                <minOccurs>1</minOccurs>
-                <maxOccurs>1</maxOccurs>
-              </multiplicity>
-            </attribute>
-            <attribute>
-              <vodml-id>duration._to</vodml-id>
-              <name>_to</name>
-              <description></description>	    
-              <datatype>
-                 <vodml-ref>ivoa:datetime</vodml-ref>
-              </datatype>
-              <multiplicity>
-                <minOccurs>1</minOccurs>
-                <maxOccurs>1</maxOccurs>
-              </multiplicity>
-            </attribute>
-            </dataType>
-            <dataType>
               <vodml-id>rational</vodml-id>
               <name>rational</name>
               <description>A rational number from Q, represented by two integers, a numerator and a denominator. A native mapping to a serialisation context does in general not exists.</description>	    
@@ -184,7 +157,7 @@
               <name>denominator</name>
               <description>The denominator of the rational. Must be greater than 0.</description>	    
               <datatype>
-                 <vodml-ref>ivoa:integer</vodml-ref>
+                 <vodml-ref>ivoa:nonnegativeInteger</vodml-ref>
               </datatype>
               <multiplicity>
                 <minOccurs>1</minOccurs>
@@ -192,132 +165,4 @@
               </multiplicity>
             </attribute>
             </dataType>
-            <package>
-               <vodml-id>quantity</vodml-id>
-               <name>quantity</name>
-               <description></description>	    
-                  <primitiveType>
-                    <vodml-id>quantity.Unit</vodml-id>
-                    <name>Unit</name>
-                    <description>Must conform to definition of unit in VOUnit spec.</description>	    
-                  </primitiveType>
-                        <dataType abstract='true'>
-                          <vodml-id>quantity.AtomicValue</vodml-id>
-                          <name>AtomicValue</name>
-                          <description></description>	    
-                        <attribute>
-                          <vodml-id>quantity.AtomicValue.ucd</vodml-id>
-                          <name>ucd</name>
-                          <description>This attribute should hold on to a valid UCD.
-                          For that purpose the attribute isa skosconcept, but a proper SKOS vocabulary for UCDs would be required to formalize this further.</description>	    
-                          <datatype>
-                             <vodml-ref>ivoa:string</vodml-ref>
-                          </datatype>
-                          <multiplicity>
-                            <minOccurs>0</minOccurs>
-                            <maxOccurs>1</maxOccurs>
-                          </multiplicity>
-                        </attribute>
-                        </dataType>
-                        <dataType>
-                          <vodml-id>quantity.BooleanValue</vodml-id>
-                          <name>BooleanValue</name>
-                          <description></description>	    
-                           <extends>
-                              <vodml-ref>ivoa:quantity.AtomicValue</vodml-ref>
-                           </extends>
-                        <attribute>
-                          <vodml-id>quantity.BooleanValue.value</vodml-id>
-                          <name>value</name>
-                          <description></description>	    
-                          <datatype>
-                             <vodml-ref>ivoa:boolean</vodml-ref>
-                          </datatype>
-                          <multiplicity>
-                            <minOccurs>1</minOccurs>
-                            <maxOccurs>1</maxOccurs>
-                          </multiplicity>
-                        </attribute>
-                        </dataType>
-                        <dataType>
-                          <vodml-id>quantity.IntegerQuantity</vodml-id>
-                          <name>IntegerQuantity</name>
-                          <description></description>	    
-                           <extends>
-                              <vodml-ref>ivoa:quantity.Quantity</vodml-ref>
-                           </extends>
-                        <attribute>
-                          <vodml-id>quantity.IntegerQuantity.value</vodml-id>
-                          <name>value</name>
-                          <description></description>	    
-                          <datatype>
-                             <vodml-ref>ivoa:integer</vodml-ref>
-                          </datatype>
-                          <multiplicity>
-                            <minOccurs>1</minOccurs>
-                            <maxOccurs>1</maxOccurs>
-                          </multiplicity>
-                        </attribute>
-                        </dataType>
-                        <dataType abstract='true'>
-                          <vodml-id>quantity.Quantity</vodml-id>
-                          <name>Quantity</name>
-                          <description>Meant to represent the value of a numerical physical quantity.  May be integer, what units can apply there?</description>	    
-                           <extends>
-                              <vodml-ref>ivoa:quantity.AtomicValue</vodml-ref>
-                           </extends>
-                        <attribute>
-                          <vodml-id>quantity.Quantity.unit</vodml-id>
-                          <name>unit</name>
-                          <description></description>	    
-                          <datatype>
-                             <vodml-ref>ivoa:quantity.Unit</vodml-ref>
-                          </datatype>
-                          <multiplicity>
-                            <minOccurs>0</minOccurs>
-                            <maxOccurs>1</maxOccurs>
-                          </multiplicity>
-                        </attribute>
-                        </dataType>
-                        <dataType>
-                          <vodml-id>quantity.RealQuantity</vodml-id>
-                          <name>RealQuantity</name>
-                          <description></description>	    
-                           <extends>
-                              <vodml-ref>ivoa:quantity.Quantity</vodml-ref>
-                           </extends>
-                        <attribute>
-                          <vodml-id>quantity.RealQuantity.value</vodml-id>
-                          <name>value</name>
-                          <description></description>	    
-                          <datatype>
-                             <vodml-ref>ivoa:real</vodml-ref>
-                          </datatype>
-                          <multiplicity>
-                            <minOccurs>1</minOccurs>
-                            <maxOccurs>1</maxOccurs>
-                          </multiplicity>
-                        </attribute>
-                        </dataType>
-                        <dataType>
-                          <vodml-id>quantity.StringValue</vodml-id>
-                          <name>StringValue</name>
-                          <description></description>	    
-                           <extends>
-                              <vodml-ref>ivoa:quantity.AtomicValue</vodml-ref>
-                           </extends>
-                        <attribute>
-                          <vodml-id>quantity.StringValue.value</vodml-id>
-                          <name>value</name>
-                          <description></description>	    
-                          <datatype>
-                             <vodml-ref>ivoa:string</vodml-ref>
-                          </datatype>
-                          <multiplicity>
-                            <minOccurs>1</minOccurs>
-                            <maxOccurs>1</maxOccurs>
-                          </multiplicity>
-                        </attribute>
-                        </dataType>
-            </package>
 </vo-dml:model>
