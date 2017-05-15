@@ -29,6 +29,9 @@ Paul Harrison
   <xsl:variable name="dq"><xsl:text>"</xsl:text></xsl:variable>
   <xsl:variable name='nl'><xsl:text>
 </xsl:text></xsl:variable>
+  <xsl:variable name='lt'><xsl:text disable-output-escaping="yes">&lt;</xsl:text></xsl:variable>
+  <xsl:variable name='gt'><xsl:text disable-output-escaping="yes">&gt;</xsl:text></xsl:variable>
+  
 
   <xsl:variable name="modname">
     <xsl:choose>
@@ -46,9 +49,10 @@ Paul Harrison
   <xsl:template match="vo-dml:model">  
   <xsl:message>Found model <xsl:value-of select="$modname"/></xsl:message>
 model <xsl:value-of select="$modname"/> (<xsl:value-of select="version"/>) "<xsl:value-of select="description"/>"
+     <xsl:apply-templates select="identifier" />
      <xsl:apply-templates select="author" />
 	  <xsl:apply-templates select="import" />
-	  <xsl:apply-templates select="* except (import|version|description|vodml-id|lastModified|name|title|author|previousVersion)"/>
+	  <xsl:apply-templates select="* except (import|version|description|vodml-id|identifier|lastModified|name|title|author|previousVersion)"/>
   </xsl:template>
  
  <xsl:template match="import">
@@ -66,6 +70,11 @@ model <xsl:value-of select="$modname"/> (<xsl:value-of select="version"/>) "<xsl
    <xsl:value-of select="concat($nl,' author ',$dq,.,$dq)"/>
 </xsl:template>
 
+<xsl:template match="identifier">
+   <xsl:value-of select="concat($nl,$lt,.,$gt)"/>
+</xsl:template>
+
+
   <xsl:template match="package">
 package <xsl:value-of select="concat(name,' ')"/> <xsl:apply-templates select= "description"/>
 {
@@ -74,7 +83,7 @@ package <xsl:value-of select="concat(name,' ')"/> <xsl:apply-templates select= "
   </xsl:template>
   
   <xsl:template match="primitiveType">
-    primitive <xsl:value-of select="concat(vodml-id, ' ')"/> <xsl:apply-templates select="description"/>
+    primitive <xsl:value-of select="concat(name, ' ')"/> <xsl:apply-templates select="description"/>
   </xsl:template>  
 
 <!-- remove the local namespace -->  
