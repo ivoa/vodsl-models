@@ -1,0 +1,26 @@
+/*
+ *  created on 20 Aug 2018 
+ */
+ 
+ model registry (0.1) "registry base concepts" author "Paul Harrison"
+ 
+ include "IVOA-v1.0.vodsl"
+ 
+ primitive ivoid "represents reference into the registry" // acutally this might want to be a dtype
+ 
+ 
+ otype Resource "something registered"
+ {
+ 	id : ivoid "the main identifier of the resource";
+ 	
+ }
+ 
+ otype Facility -> Resource "" {}
+ 
+ 
+
+ 
+ otype Organization "" {}
+ 
+ 
+ 

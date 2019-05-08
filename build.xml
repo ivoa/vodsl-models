@@ -14,30 +14,31 @@
     <target name="alltodsl"  description="description">
     	<todsl model="IVOA" sdir="vo-dml/models/ivoa"/> 
     	<todsl model="Characterization" sdir="vo-dml/models/characterization"/>
-    	<todsl model="SourceDM" sdir="vo-dml/models/source" />
-      <todsl model="DatasetMetadata-1.0" sdir="vo-dml/models/ds/"/>
+    	<todsl model="SourceDM" sdir="vo-dml/models/source-std" />
     	<todsl model="PhotDM-alt" sdir="vo-dml/models/photdm-alt" />
-    	<todsl model="STCCoords-2.0" sdir="vo-dml/models/STC2/prototype/coords"/>
-      <todsl model="STCCoordSys-2.0" sdir="vo-dml/models/STC2/prototype/coordsys"/>
-      <todsl model="STCTrans-2.0" sdir="vo-dml/models/STC2/prototype/trans"/>
-    	<todsl model="VO-DML-STC2" sdir="vo-dml/models/STC2/2016-02-19"/>
-    	<todsl model="STC" sdir="vo-dml/models/stc"/>
     	<todsl model="ObsCore" sdir="vo-dml/models/obscore"/>
-      <todsl model="ProvenanceDM" sdir="vo-dml/models/provenancedm"/>
-  	   <todsl model="SpectrumDM" sdir="vo-dml/models/spectrum" />
+  	    <todsl model="SpectrumDM" sdir="vo-dml/models/spectrum" />
     	<todsl model="RegTAP" sdir="vo-dml/models/registry"/>
-     	<todsl model="Cube-1.0" sdir="vo-dml/models/cube" />
-     	<todsl model="CAOM2" sdir="vo-dml/models/caom2" />
-    	
+    	<todsl model="coordsys_tessel" sdir="vo-dml/models/tesselation" />
+    	<todsl model="coords_tessel" sdir="vo-dml/models/tesselation" />
+    	<todsl model="lmsource" sdir="vo-dml/models/tesselation" />
+    	<todsl model="Sample" sdir="vo-dml/models/sample/sample/"/>
+    	<todsl model="Filter" sdir="vo-dml/models/sample/filter/"/>
+        <todsl model="DatasetMetadata-1.0" sdir="DatasetMetadata/vo-dml/"/>
+     	<todsl model="CAOM-2.3" sdir="vo-dml/models/caom2/"/>
+        <todsl model="STC_coords-v2.0" sdir="STC/vo-dml/"/>
+        <todsl model="STC_meas-v2.0" sdir="STC/vo-dml/"/>
+        <todsl model="STC_trans-v2.0" sdir="STC/vo-dml/"/>
+        <todsl model="ProvenanceDM" sdir="provenance/vo-dml/xml/"/>
+	
     </target>
 	
 	<!-- ================================= 
           target: fewdsl              
          ================================= -->
     <target name="fewdsl"  description="do a few transformations">
-    	<todsl model="SourceDM" sdir="vo-dml/models/source" />
-
-
+     	<todsl model="Cube-1.0" sdir="Cube/vo-dml/" />
+  	
     </target>
 
 

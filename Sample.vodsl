@@ -1,12 +1,12 @@
 
-model src (1.0) "This is a sample data model. It contains the IVOA UML Profile and imports the IVOA_Profile data model with primitive types.
+model sample (1.0) "This is a sample data model. It contains the IVOA UML Profile and imports the IVOA_Profile data model with primitive types.
 It has some sample relationships etc to be used in documentation etc."
      
        include "IVOA-v1.0.vodsl"
      
-       include "PhotDM-alt.vodsl"
+       include "Filter.vodsl"
      
-package source  ""
+package catalog  ""
 {
       
 enum LuminosityType  ""
@@ -24,18 +24,18 @@ planet  "",
 unknown  ""
 }
 
-dtype AlignedEllipse  -> source.SkyError ""
+dtype AlignedEllipse  -> catalog.SkyError ""
   {   
         longError: ivoa:real   "";
         latError: ivoa:real   "";
   }
 
-dtype CircleError  -> source.SkyError ""
+dtype CircleError  -> catalog.SkyError ""
   {   
         radius: ivoa:real   "";
   }
 
-dtype GenericEllipse  -> source.SkyError ""
+dtype GenericEllipse  -> catalog.SkyError ""
   {   
         major: ivoa:real   "major axis of error ellipse";
         minor: ivoa:real   "";
@@ -46,11 +46,21 @@ dtype SkyCoordinate  ""
   {   
         longitude: ivoa:RealQuantity   "The longitude part of this position in units of degrees.";
         latitude: ivoa:RealQuantity   "The latitude part of this position in units of degrees.";
-        frame  references source.SkyCoordinateFrame "";
+        frame  references catalog.SkyCoordinateFrame "";
   }
 
 abstract dtype SkyError  "Error of a position on the sky."
   {   
+  }
+
+abstract otype AbstractSource  -> catalog.AstroObject ""
+  {   
+        name: ivoa:string   "";
+        description: ivoa:string  @?   "";
+        position: catalog.SkyCoordinate   "";
+        positionError: catalog.SkyError  @?   "";
+        classification: catalog.SourceClassification   "";
+        luminosity : catalog.LuminosityMeasurement @*  as composition "";
   }
 
 abstract otype AstroObject  "Generic base class for all astronomical objects."
@@ -63,11 +73,11 @@ otype LuminosityMeasurement  ""
         value: ivoa:RealQuantity   "";
         error: ivoa:RealQuantity  @?   "";
         description: ivoa:string  @?   "";
-        type: source.LuminosityType   "";
-        filter  references photdm_alt:PhotometryFilter "";
+        type: catalog.LuminosityType   "";
+        filter  references filter:PhotometryFilter "";
   }
 
-otype SDSSSource  -> source.Source ""
+otype SDSSSource  -> catalog.AbstractSource ""
   {   
   }
 
@@ -79,17 +89,11 @@ otype SkyCoordinateFrame  ""
         system: ivoa:string  @?   "";
   }
 
-otype Source  -> source.AstroObject ""
+otype Source  -> catalog.AbstractSource ""
   {   
-        name: ivoa:string   "";
-        description: ivoa:string  @?   "";
-        position: source.SkyCoordinate   "";
-        positionError: source.SkyError  @?   "";
-        classification: source.SourceClassification   "";
-        luminosity : source.LuminosityMeasurement @*  as composition "";
   }
 
-otype TwoMassSource  -> source.Source ""
+otype TwoMassSource  -> catalog.AbstractSource ""
   {   
   }
 

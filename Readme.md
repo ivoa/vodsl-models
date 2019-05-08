@@ -24,7 +24,7 @@ In some cases, minor edits have been made to the
 generated VODSL files to correct obvious errors in the original source.
 
 The fundamental model that should included within all of the other models is the 
-[IVOA.vodsl](./IVOA.vodsl) model to make the models IVOA compliant.
+[IVOA-v1.0.vodsl](./IVOA-v1.0.vodsl) model to make the models IVOA compliant.
 
 
 ###STC

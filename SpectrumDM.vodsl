@@ -1,7 +1,7 @@
 model spectral (1.0) ""
 	   author "tbd"
 
-include "IVOA.vodsl"
+include "IVOA-v1.0.vodsl"
 include "STC.vodsl"
 include "Characterization.vodsl"
 

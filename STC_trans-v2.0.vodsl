@@ -4,9 +4,7 @@ model trans (2.0) "
         "
      
  author "Arnold Rots, Mark Cresitello-Dittmar"
-       include "IVOA.vodsl"
-     
-       include "STCCoordSys-2.0.vodsl"
+       include "IVOA-v1.0.vodsl"
      
 enum Projection  ""
 {
@@ -34,18 +32,16 @@ CSC  "",
 QSC  ""
 }
 
-otype FrameTransform  ""
+otype Transform  ""
   {   
-        operation : Transform @+  as composition "";
-        nativeFrame  references coordsys:CoordFrame "";
-        targetFrame  references coordsys:CoordFrame "";
+        operation : TOperation @+  as composition "";
   }
 
-abstract otype Transform  ""
+abstract otype TOperation  ""
   {   
   }
 
-otype TProjection  -> Transform ""
+otype TProjection  -> TOperation ""
   {   
         algorithm: Projection   "";
         axis : TProjectionAxis@[1..2] as composition "";
@@ -60,10 +56,10 @@ otype TProjectionAxis  ""
 
 otype Mappings  ""
   {   
-        transforms : FrameTransform @+  as composition "";
+        transforms : Transform @+  as composition "";
   }
 
-otype TMatrix  -> Transform ""
+otype TMatrix  -> TOperation ""
   {   
         M: ivoa:nonnegativeInteger   "";
         N: ivoa:nonnegativeInteger   "";
@@ -77,7 +73,7 @@ otype TMatrixElement  ""
         value: ivoa:real   "";
   }
 
-otype TLookup  -> Transform ""
+otype TLookup  -> TOperation ""
   {   
         entry : TLookupEntry @+  as composition "";
   }
@@ -96,10 +92,4 @@ otype TStringEntry  -> TLookupEntry ""
   {   
         nativeValue: ivoa:integer   "";
         targetValue: ivoa:string   "";
-  }
-
-otype TPolarizationEntry  -> TLookupEntry ""
-  {   
-        nativeValue: ivoa:integer   "";
-        targetValue: coordsys:domain.polarization.PolCoord   "";
   }

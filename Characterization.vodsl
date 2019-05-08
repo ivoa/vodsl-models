@@ -3,7 +3,7 @@ model char (0.5) "This is the data model for describing teh Characterization of 
      
        include "STC.vodsl"
      
-       include "IVOA.vodsl"
+       include "IVOA-v1.0.vodsl"
      
 enum CalibrationStatus  ""
 {

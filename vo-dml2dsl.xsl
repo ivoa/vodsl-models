@@ -11,7 +11,7 @@ Paul Harrison
                 extension-element-prefixes="exsl"
                 xmlns:xsd="http://www.w3.org/2001/XMLSchema"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xmlns:vo-dml="http://www.ivoa.net/xml/VODML/v1.0">
+                xmlns:vo-dml="http://www.ivoa.net/xml/VODML/v1">
   
  <xsl:output method="text" encoding="UTF-8" indent="no" />
   
@@ -236,7 +236,7 @@ enum <xsl:value-of select="name"/><xsl:text> </xsl:text>
   <xsl:text> unique</xsl:text>
 </xsl:template>
 
-
+<!-- need to do something with identifier and uri... -->
 <xsl:template match="*"> <!-- catchall to indicate where there might be missed element to highlight when VODML might have changed-->
   <xsl:value-of select="concat('***',name(.),'*** ')"/>
    <xsl:apply-templates/>

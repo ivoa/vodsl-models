@@ -1,6 +1,6 @@
 model testingscope ( 1.0 ) "Testing the scope of types"
 author "tbd"
-include "IVOA.vodsl"
+include "IVOA-v1.0.vodsl"
     primitive Identity "overriding the ivoa type"
 	primitive real "floating point number at top level in this model"
 
@@ -26,7 +26,7 @@ package topl "top level package"
 					f7 : topl.p2.sprim  "this is how it should be referred to";
 					f8 : obscore:Access "should not be in scope (not imported)";
 				}
-				otype multiplicities "the @ sign is not really syntactically necessary"
+				otype multiplicities "the @ sign introduces a multiplicity"
 			{
 				m1 : ivoa:integer @? "0 or 1";
 				m2 : ivoa:integer @* "0 or many ** not advised for attribute";

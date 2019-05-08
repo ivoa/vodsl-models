@@ -1,0 +1,604 @@
+
+model caom2 (2.3) "a general purpose data model for use as the core data model of an astronomical data centre"
+     
+ author "Patrick Dowler, Canadian Astronomy Data Centre"
+       include "IVOA-v1.0.vodsl"
+     
+    primitive uuid  "represents a 128-bit binary ID in the canonical ascii UUID format"
+package caom2  "this package contains the CAOM object types and enumerations"
+{
+      
+enum ObservationIntentType  "the intent of the original observer in acquiring this observation;
+                work-around: using the name of the literal to convey the serialised value"
+{
+science  "the intent of this observation was to create science data",
+calibration  "the intent of this observation was to create calibration data"
+}
+
+enum TargetType  "the type of target being observed; qualifies target name;
+                work-around: using the name of the literal to convey the serialised value"
+{
+object  "the target of the observation is an astronomical object",
+field  "the target of the observation is a defined region on the sky"
+}
+
+enum Status  "a status flag indicating degree of success;
+                work-around: using the name of the literal to convey the serialised value"
+{
+fail 
+}
+
+enum CalibrationLevel  "the degree to which data has been calibrated to remove instrumental effects;
+                issue: there is no way to convey the integer serialised values here so it is in the
+                description of each value"
+{
+PLANNED  "(-1) planned data product that does not yet exist",
+RAW_INSTRUMENTAL  "(0) raw data in some opaque instrument-specific format",
+RAW_STANDARD  "(1) raw data in a common format",
+CALIBRATED  "(2) standard calibration steps have been applied",
+PRODUCT  "(3) additional non-standard calibration steps have been applied",
+ANALYSIS_PRODUCT  "(4) : data product from scientific analysis"
+}
+
+enum EnergyBand  "a general set of energy regions that span the electromagnetic spectrum;
+                work-around: using the name of the literal to convey the serialised value"
+{
+Radio  "wavelength greater than ~10mm",
+Millimeter  "wavelength from 0.1 to 10mm",
+Infrared  "wavelength from 1um to 0.1mm",
+Optical  "wavelength from 300nm to 1um",
+UV  "wavelength from 100 to 300nm",
+EUV  "wavelength from 10 to 100nm",
+Xray  "energy from 0.12 to 120keV",
+Gammaray  "energy greater than ~120keV"
+}
+
+enum Quality  "a general indicator of data quality;
+                work-around: using the name of the literal to convey the serialised value"
+{
+junk  "this data cannot be used for anything"
+}
+
+enum PolarizationState  "a classification of polarization (Stokes states plus other related quantities);
+                work-around: using the name of the literal to convey the serialised value"
+{
+I  "",
+Q  "",
+U  "",
+V  "",
+RR  "",
+LL  "",
+RL  "",
+LR  "",
+XX  "",
+YY  "",
+XY  "",
+YX  "",
+POLI  "",
+FPOLI  "",
+POLA  "",
+EPOLI  "",
+CPOLI  "",
+NPOLI  ""
+}
+
+enum SegmentType  "code used in CAG description of polygons"
+{
+LINE  "(0) line from previous to this vertex",
+MOVE  "(1) move from previous to this vertex",
+CLOSE  "(2) line from previous vertex to last vertex with type MOVE"
+}
+
+enum ReleaseType  "a flag indicating how an artifact is classified to determine access permissions;
+                work-around: using the name of the literal to convey the serialised value"
+{
+data  "access permission checks assume the protected item is data",
+meta  "access permission checks assume the protected item is metadata"
+}
+
+abstract dtype VocabularyTerm  "base class of a single term (word) in a vocabulary
+                (NEW in CAOM-2.3)"
+  {   
+        namespace: ivoa:anyURI   "globally unique namespace for the vocabulary";
+        term: ivoa:string   "the word from the vocabulary";
+        base: ivoa:boolean   "flag indicating of the vocabulary namespace is a base vocabulary";
+  }
+
+abstract dtype DataProductType  -> VocabularyTerm "vocabulary term used in CAOM; this class defines constants for the CAOM
+                DataProductType vocabulary which includes all the terms from the IVOA ObsCore
+                data model plus additional terms used in CAOM and not in ObsCore
+                (CHANGED in CAOM-2.3)"
+  {   
+  }
+
+abstract dtype ProductType  -> VocabularyTerm "this class defines constants for the CAOM ProductType vocabulary
+                (CHANGED in CAOM-2.3)"
+  {   
+  }
+
+abstract otype CaomEntity  "base entity class to support persistence;
+                entity attributes are generally set or updated by persistence implementations"
+  {   
+        id: uuid   "globally unique identifier (primary key)";
+        lastModified: ivoa:datetime  @?   "timestamp of last modification of this entity; the timestamp is intended to be applied
+                    or updated when the entity is stored 
+                    (e.g. in a database)";
+        maxLastModified: ivoa:datetime  @?   "maximum timestamp of last modification of this entity and all child entities;
+                    the timestamp is intended to be applied or updated when the entity is stored 
+                    (e.g. in a database)";
+        metaChecksum: ivoa:anyURI  @?   "checksum of this entity; (NEW in CAOM-2.3)
+                    
+                    The URI must conform to the pattern {algorithm}:{value}, for example: md5:4be91751541fd804e7207663a0822f56.
+                    The checksum of an entity is computed by accumulating byte representation of individual metadata values in
+                    the following order: (1) CaomEntity.id for entities, (2) state fields in alphabetic order (foo.a comes before 
+                    foo.b) and using depth-first recursion (foo.abc.x comes before foo.def). Null values are ignored so that the 
+                    addition of new fields in future versions will not change/invalidate existing checksums until values are assigned.
+                    Non-null values are converted to bytes as follows. 
+                    
+                    string: UTF-8 encoded bytes
+                    URI: UTF-8 encoded bytes of string representation
+                    float: IEEE754 single (4 bytes)
+                    double: IEEE754 double (8 bytes)
+                    boolean: convert to single byte, false=0, true=1 (1 bytes)
+                    byte: as-is (1 byte)
+                    short: (2 bytes, network byte order == big endian))
+                    integer: (4 bytes, network byte order == big endian)
+                    long: (8 bytes, network byte order == big endian)
+                    date: truncate time to whole number of seconds and treat as a long (seconds since 1970-01-01 00:00:00 UTC)
+                    ";
+        accMetaChecksum: ivoa:anyURI  @?   "accumulated checksum of the metadata of this entity and all child entities; (NEW in CAOM-2.3)
+                    
+                    The URI must conform to the pattern {algorithm}:{value}, for example: md5:4be91751541fd804e7207663a0822f56.
+                    The accumulated checksum of an entity is computed by accumulating the byte representation of entity checksums
+                    in the following order: (1) the metaChecksum of the current entity, (2) the accMetaChecksum of all child entities
+                    accumulated in order of the child's CaomEntity.id. For an entity with no children, the accMetaChecksum is derived
+                    only from the metaChecksum but it is not equal to it because it is a checksum of that checksum and not a checksum
+                    of the same metadata directly.
+                    ";
+  }
+
+abstract otype Observation  -> CaomEntity "an observation is a single top-level entry in an astronomy data centre"
+  {   
+        collection: ivoa:string   "the name of the data collection this observation belongs to";
+        observationID: ivoa:string   "the collection-specific identifier for this observation";
+        metaRelease: ivoa:datetime  @?   "timestamp after which metadata for the observation instance is public";
+        sequenceNumber: ivoa:integer  @?   "a collection-specific sequence number for observations; re-use or reset is collection specific";
+        type: ivoa:string  @?   "";
+        intent: ObservationIntentType   "the intent of the original observer in acquiring this data";
+        algorithm : Algorithm as composition "the algorithm or process that created this observation";
+        telescope : Telescope @?  as composition "the telescope or facility where this observation was created";
+        instrument : Instrument @?  as composition "the instrument or detector used to acquire the data";
+        environment : Environment @?  as composition "the environmental conditions at the time of observation";
+        proposal : Proposal @?  as composition "the science proposal underwhich this observation was created";
+        target : Target @?  as composition "the intended target of the observation";
+        targetPosition : TargetPosition @?  as composition "the intended target position for this observation";
+        requirements : Requirements @?  as composition "the observational requirements specified by the observer or proposal";
+        planes : Plane@* as composition "the component planes belonging to this observation";
+  }
+
+otype SimpleObservation  -> Observation "an observation created directly by operating an instrument or process"
+  {   
+  }
+
+otype CompositeObservation  -> Observation "an observation made by combining other observations"
+  {   
+        members: ivoa:anyURI @*  "members are the observations grouped together by the algorithm that defines the composite";
+  }
+
+otype Plane  -> CaomEntity "a component of an observation that describes one product of the observation"
+  {   
+        creatorID: ivoa:anyURI  @?   "identifier for this product assigned by the creator; 
+                    typically made up of the Observation.collection, Observation.observationID, and Plane.productID
+                    and in the form of an IVOA dataset identifier (NEW in CAOM-2.3)";
+        productID: ivoa:string   "collection- and observationID-specific identifier for this product";
+        metaRelease: ivoa:datetime  @?   "timestamp after which metadata for the plane is public; this metaRelease timestamp
+                    applies to all children of the plane and to artifacts with releaseType=meta";
+        dataRelease: ivoa:datetime  @?   "timestamp after which data for the plane is public; this dataRelease timestamp
+                    applies to all children of the plane and to artifacts with releaseType=data";
+        calibrationLevel: CalibrationLevel  @?   "standard classification of the degree to which the data is calibrated";
+        dataProductType: DataProductType  @?   "standard classification of the type of data product; describes the logical data type
+                    for the main artifacts";
+        quality : DataQuality @?  as composition "flag indicating the quality of the data";
+        metrics : Metrics @?  as composition "collection of measured quantities that describe the content of the data";
+        position : Position @?  as composition "description of the position(s) included in the data";
+        energy : Energy @?  as composition "descritpion of the energy(ies) included in the data";
+        time : Time @?  as composition "description of the time(s) included in the data";
+        polarization : Polarization @?  as composition "description of the polarization(s) included in the data";
+        provenance : Provenance @?  as composition "description of the provenance of the data";
+        artifacts : Artifact@* as composition "the component artifacts belonging to this plane";
+  }
+
+otype Artifact  -> CaomEntity "a physical product (typically a file)"
+  {   
+        uri: ivoa:anyURI   "an identifier that resolves to the storage location of the artifact";
+        productType: ProductType   "";
+        releaseType: ReleaseType   "field indicating how access permissions for this artifact are determined";
+        contentType: ivoa:string  @?   "label specifying the format of the resolved artifact; typically a MIME-type";
+        contentLength: ivoa:integer  @?   "the size of the resolved artifact; typically file size in bytes";
+        contentChecksum: ivoa:anyURI  @?   "the checksum of the artifact data; 
+                    the URI must conform to the pattern {algorithm}:{value}, for example: md5:4be91751541fd804e7207663a0822f56
+                    (NEW in CAOM-2.3)";
+        parts : Part@* as composition "the component parts of this artifact";
+  }
+
+otype Part  -> CaomEntity "format-specific name of this part;
+                this is typically something like a FITS extension or a file within a container"
+  {   
+        name: ivoa:string   "the name of this part of the artifact;
+                    this is typically something like a FITS extension name or number or a filename";
+        productType: ProductType  @?   "";
+        chunks : Chunk@* as composition "component chunks that belong to this part";
+  }
+
+otype Chunk  -> CaomEntity "a quantitatively defined subsection of a data array;
+                the part contains the whole array"
+  {   
+        productType: ProductType  @?   "";
+        naxis: ivoa:integer  @?   "number of axes in the data array";
+        positionAxis1: ivoa:integer  @?   "index of the first position axis";
+        positionAxis2: ivoa:integer  @?   "index of the second position axis";
+        energyAxis: ivoa:integer  @?   "index of the energy axis";
+        timeAxis: ivoa:integer  @?   "index of the time axis";
+        polarizationAxis: ivoa:integer  @?   "index of the polarization axis";
+        observableAxis: ivoa:integer  @?   "index of the observable axis";
+        position : wcs.SpatialWCS @?  as composition "spatial WCS description of the data array or subsection thereof";
+        energy : wcs.SpectralWCS @?  as composition "spectral WCS description of the data array or subsection thereof";
+        time : wcs.TemporalWCS @?  as composition "temporal WCS description of the data array or subsection thereof";
+        polarization : wcs.PolarizationWCS @?  as composition "polarization WCS description of the data array or subsection thereof";
+        observable : wcs.ObservableAxis @?  as composition "observable description of the data array or subsection thereof";
+  }
+
+otype Algorithm  ""
+  {   
+        name: ivoa:string "";
+  }
+
+otype Telescope  "description of the telescope where an observation was created"
+  {   
+        name: ivoa:string   "common name of the telescope";
+        geoLocationX: ivoa:real  @?   "x-coordinate of the geocentric location of the telescope at the time of observation
+                    (see FITS WCS Paper III)";
+        geoLocationY: ivoa:real  @?   "y-coordinate of the geocentric location of the telescope at the time of observation
+                    (see FITS WCS Paper III)";
+        geoLocationZ: ivoa:real  @?   "z-coordinate of the geocentric location of the telescope at the time of observation
+                    (see FITS WCS Paper III)";
+        keywords: ivoa:string @*  "additional keywords that describe the telescope or telscope configuration 
+                    at the time of observation; 
+                    keywords cannot contain the pipe (|) character - it is reserved for use in persistence
+                    systems (e.g. to store all keywords in a single column in a table)
+                ";
+  }
+
+otype Instrument  "description of the instrument used to acquire the data"
+  {   
+        name: ivoa:string   "common name for the instrument";
+        keywords: ivoa:string @*  "additional keywords that describe the instrument or instrument configuration
+                    at the time of observation; 
+                    keywords cannot contain the pipe (|) character - it is reserved for use in persistence
+                    systems (e.g. to store all keywords in a single column in a table)";
+  }
+
+otype Environment  "collection of measured quantities that characterise the environment 
+                at the time of observation"
+  {   
+        name: ivoa:real  @?   "typical atmospheric distortion (full-width-half-max of point source)";
+        humidity: ivoa:real  @?   "humidity [0,1]";
+        elevation: ivoa:real  @?   "angular elevation (alt in alt-azimuth?) above horizon";
+        tau: ivoa:real  @?   "";
+        wavelengthTau: ivoa:real  @?   "";
+        ambientTemp: ivoa:real  @?   "ambient temperature (outside or inside the telescope?)";
+        photometric: ivoa:boolean  @?   "indicator that flux and/or color calibration is stable/feasible?";
+  }
+
+otype Proposal  "description of the science proposal or programme that initiated the observation"
+  {   
+        proposalID: ivoa:string   "collection-specific identifier for the proposal";
+        pi: ivoa:string  @?   "proper name of the principal investigator";
+        project: ivoa:string  @?   "common name of the project this proposal belongs to; typically used for larger or
+                    long-running projects that include mutliple proposals";
+        title: ivoa:string  @?   "title of the proposal";
+        keywords: ivoa:string @*  "additional keywords that describe the science goals of the proposal; 
+                    keywords cannot contain the pipe (|) character - it is reserved for use in persistence
+                    systems (e.g. to store all keywords in a single column in a table)";
+  }
+
+otype Target  "description of the target of an observation"
+  {   
+        name: ivoa:string   "proper name of the target";
+        type: TargetType  @?   "type of target; typically used to figure out what the target name means
+                    and where to look for additional information about it";
+        redshift: ivoa:real  @?   "cosmological redshift of the target";
+        standard: ivoa:boolean  @?   "indicates that the target is typically used as a standard (astrometric, photometric, etc)";
+        moving: ivoa:boolean  @?   "indicates that the target is a moving object; used for solar system objects 
+                    but not high proper motion stars";
+        keywords: ivoa:string @*  "additional keywords that describe the target; 
+                    keywords cannot contain the pipe (|) character - it is reserved for use in persistence
+                    systems (e.g. to store all keywords in a single column in a table)";
+  }
+
+otype TargetPosition  "description of the intended position of the observation 
+                (not the position of the intended or actual target)"
+  {   
+        coordsys: ivoa:string   "the coordinate system of the coordinates";
+        equinox: ivoa:real  @?   "the equinox of the coordinates";
+        coordinates: types.Point   "the coordinates";
+  }
+
+otype Requirements  "description of the observational requirements specified by the proposal"
+  {   
+        flag: Status   "flag indicating degree to which requirements were satisfied";
+  }
+
+otype Provenance  "description of how this data was produced"
+  {   
+        name: ivoa:string   "collection-specific common name of the process";
+        reference: ivoa:anyURI  @?   "collection-specific common name of the process";
+        version: ivoa:string  @?   "version of the software or process that produced the data";
+        project: ivoa:string  @?   "name of the project that produced the data; data produced in a uniform way are
+                    typically labelled with the same project name";
+        producer: ivoa:string  @?   "common name of the entity (person, institute, etc) responsible for producing the data";
+        runID: ivoa:string  @?   "collection-specific identifier for the processing instance that produced the data;
+                    this identifier can typcially be traced in log files or logging systems";
+        lastExecuted: ivoa:string  @?   "timestamp describing when this process last ran and produced data";
+        keywords: ivoa:string  @?   "addituional keywords that describe the processing; this may include both general
+                    descriptive words and those specific to this particular execution of the processing; 
+                    keywords cannot contain the pipe (|) character - it is reserved for use in persistence
+                    systems (e.g. to store all keywords in a single column in a table)";
+        inputs: ivoa:anyURI @*  "version of the software or process that produced the data";
+  }
+
+otype DataQuality  "description of the data quality"
+  {   
+        flag: Quality   "flag indicating the data quality";
+  }
+
+otype Metrics  "collection of measured quantities that describe the content of the data"
+  {   
+        sourceNumberDensity: ivoa:real  @?   "number of sources detected per unit area";
+        background: ivoa:real  @?   "background level";
+        backgroundStddev: ivoa:real  @?   "standard deviation in the background level";
+        fluxDensityLimit: ivoa:real  @?   "flux density with a signal:noise ratio of 10";
+        magLimit: ivoa:real  @?   "magnitude with a signal:noise ratio of 10";
+  }
+
+otype Position  "description of the position coverage and sampling of the data"
+  {   
+        bounds: types.Shape  @?   "spatial boundary that includes the data";
+        dimension: wcs.Dimension2D  @?   "number of separate measurements (pixels) along each axis";
+        resolution: ivoa:real  @?   "median spatial resolution (full-width-half-max) per pixel";
+        sampleSize: ivoa:real  @?   "median pixel size";
+        timeDependent: ivoa:boolean  @?   "indicates that the observation was taken with non-siderial tracking so
+                    the resulting position is time-dependent; this usually explains why no bounds is
+                    available";
+  }
+
+otype Energy  "description of the energy coverage and sampling of the data"
+  {   
+        bounds: types.Interval  @?   "energy bounds that include the data (barycentric vacuum wavelength)";
+        emBand: EnergyBand  @?   "standard name of the energy regime included in the data";
+        dimension: ivoa:integer  @?   "number of measurements (pixels) on the energy axis";
+        resolvingPower: ivoa:real  @?   "median spectral resolving power per pixel";
+        sampleSize: ivoa:real  @?   "median pixel size";
+        bandpassName: ivoa:string  @?   "telescope- and instrument-specific name for the energy band included";
+        transition: wcs.EnergyTransition  @?   "target energy transition for this data";
+        restwav: ivoa:real  @?   "rest wavelength of the target energy transition";
+  }
+
+otype Time  "description of the time coverage and sampling of the data"
+  {   
+        bounds: types.Interval  @?   "time bounds that include the data";
+        dimension: ivoa:integer  @?   "number of measurements (pixels) on the time axis";
+        resolution: ivoa:real  @?   "median temporal resolution per pixel";
+        sampleSize: ivoa:real  @?   "median pixel size";
+        exposure: ivoa:real  @?   "median exposure time per pixel";
+  }
+
+otype Polarization  "description of polarization measurements included in the data"
+  {   
+        states: PolarizationState @*  "standard polarization states included";
+        dimension: ivoa:integer  @?   "number of polarization states included";
+  }
+
+package types  "data types"
+{
+      
+dtype Point 
+  {   
+        cval1: ivoa:real "";
+        cval2: ivoa:real "";
+  }
+
+dtype Vertex  -> Point
+  {   
+        type: SegmentType "";
+  }
+
+abstract dtype Shape 
+  {   
+  }
+
+dtype Circle  -> Shape
+  {   
+        center: Point "";
+        radius: ivoa:real "";
+  }
+
+dtype MultiPolygon 
+  {   
+        vertices: Vertex @[3..-1]"";
+  }
+
+dtype Polygon  -> Shape
+  {   
+        points: Point @[3..-1]"";
+        samples: MultiPolygon "";
+  }
+
+dtype SubInterval 
+  {   
+        lower: ivoa:real "";
+        upper: ivoa:real "";
+  }
+
+dtype Interval 
+  {   
+        lower: ivoa:real "";
+        upper: ivoa:real "";
+        samples: SubInterval  @+ "";
+  }
+
+}
+  
+package wcs  "World Coordinate System (WCS) data types"
+{
+      
+dtype Axis 
+  {   
+        ctype: ivoa:string "";
+        cunit: ivoa:string  @? "";
+  }
+
+dtype Dimension2D 
+  {   
+        naxis1: ivoa:integer "";
+        naxis2: ivoa:integer "";
+  }
+
+dtype RefCoord 
+  {   
+        pix: ivoa:real "";
+        val: ivoa:real "";
+  }
+
+dtype CoordError 
+  {   
+        crder: ivoa:real  @? "";
+        csyer: ivoa:real  @? "";
+  }
+
+dtype Slice 
+  {   
+        axis: Axis "";
+        bin: ivoa:integer "";
+  }
+
+dtype EnergyTransition 
+  {   
+        species: ivoa:string "";
+        transition: ivoa:string "";
+  }
+
+dtype Coord2D 
+  {   
+        coord1: RefCoord "";
+        coord2: RefCoord "";
+  }
+
+dtype CoordRange1D 
+  {   
+        start: RefCoord "";
+        end: RefCoord "";
+  }
+
+dtype CoordBounds1D 
+  {   
+        vertices: CoordRange1D  @+ "";
+  }
+
+dtype CoordFunction1D 
+  {   
+        dimension: ivoa:integer "";
+        refCoord: RefCoord "";
+        cd11: ivoa:real "";
+  }
+
+dtype CoordAxis1D 
+  {   
+        axis: Axis "";
+        error: CoordError  @? "";
+        range: CoordRange1D  @? "";
+        bounds: CoordBounds1D  @? "";
+        function: CoordFunction1D  @? "";
+  }
+
+dtype CoordRange2D 
+  {   
+        start: Coord2D "";
+        end: Coord2D "";
+  }
+
+dtype CoordBounds2D 
+  {   
+        vertices: Coord2D  @+ "";
+  }
+
+dtype CoordFunction2D 
+  {   
+        dimension: Dimension2D "";
+        refCoord: Coord2D "";
+        cd11: ivoa:real "";
+        cd12: ivoa:real "";
+        cd21: ivoa:real "";
+        cd22: ivoa:real "";
+  }
+
+dtype CoordAxis2D 
+  {   
+        axis1: Axis "";
+        axis2: Axis "";
+        error1: CoordError  @? "";
+        error2: CoordError  @? "";
+        range: CoordRange2D  @? "";
+        bounds: CoordBounds2D  @? "";
+        function: CoordFunction2D  @? "";
+  }
+
+otype SpatialWCS 
+  {   
+        axis: CoordAxis2D "";
+        coordsys: ivoa:string  @? "";
+        equinox: ivoa:real  @? "";
+        resolution: ivoa:real  @? "";
+  }
+
+otype SpectralWCS 
+  {   
+        axis: CoordAxis1D "";
+        specsys: ivoa:string "";
+        ssysobs: ivoa:string  @? "";
+        ssyssrc: ivoa:string  @? "";
+        restfrq: ivoa:real  @? "";
+        restwav: ivoa:real  @? "";
+        velosys: ivoa:real  @? "";
+        zsource: ivoa:real  @? "";
+        velang: ivoa:real  @? "";
+        bandpassName: ivoa:string  @? "";
+        transition: EnergyTransition  @? "";
+        resolvingPower: ivoa:real  @? "";
+  }
+
+otype TemporalWCS 
+  {   
+        axis: CoordAxis1D "";
+        timesys: ivoa:string  @? "";
+        trefpos: ivoa:string  @? "";
+        mjdref: ivoa:real  @? "";
+        exposure: ivoa:real  @? "";
+        resolution: ivoa:real  @? "";
+  }
+
+otype PolarizationWCS 
+  {   
+        axis: CoordAxis1D "";
+  }
+
+otype ObservableAxis 
+  {   
+        dependent: Slice "";
+        independent: Slice  @? "";
+  }
+
+}
+  
+}
+  

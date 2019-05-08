@@ -1,0 +1,382 @@
+
+model coords (2.0) "The coordsys model defines a pattern for Coordinate Frame specifications, various Coordinate System objects for bundling Coordinate Frames into associated groups, and implements the CoordFrame pattern for several physical domains.  The expectation is that as models are created which touch on domains not represented here, they will implement this pattern in the same fashion for the new domain.  This implementation may reside in the other model, or be added to this list of implementations.  Models which refer to the CoordFrame of this model are stating an expectation that the instances included follow the specified pattern.
+"
+     
+ author "Arnold Rots, Mark Cresitello-Dittmar, Omar Laurino"
+       include "IVOA-v1.0.vodsl"
+     
+enum Handedness  ""
+{
+left  "",
+right  ""
+}
+
+abstract dtype Coordinate  ""
+  {   
+        frame  @?  references CoordFrame "";
+  }
+
+abstract dtype CoordValue  -> Coordinate ""
+  {   
+        axis  references Axis "";
+  }
+
+abstract dtype CompositeCoordinate  -> Coordinate ""
+  {   
+        cmpt: CoordValue  @+   "";
+  }
+
+dtype PhysicalCoordValue  -> CoordValue ""
+  {   
+        cval: ivoa:Quantity   "";
+  }
+
+dtype BinnedCoordValue  -> CoordValue ""
+  {   
+        cval: ivoa:integer   "";
+  }
+
+dtype CompositeCoord1D  -> CompositeCoordinate ""
+  {   
+  }
+
+dtype CompositeCoord2D  -> CompositeCoordinate ""
+  {   
+  }
+
+dtype CompositeCoord3D  -> CompositeCoordinate ""
+  {   
+  }
+
+abstract otype CoordFrame  ""
+  {   
+  }
+
+abstract otype CoordSys  "The CoordSys object is the parent of a set of containers for organizing Coordinate Frame specifications into related groupings.  "
+  {   
+  }
+
+otype AstroCoordSystem  -> CoordSys "AstroCoordSystem is a container object for organizing physical Coordinate Frame specifications into related groupings.  The object provides a references to Coordinate Frame instances in each of the known domain implementations.  As a whole, the AstroCoordSystem should provide a complete description of the domain space. "
+  {   
+        coordFrame  @*  references CoordFrame "";
+  }
+
+otype CoordSpace  ""
+  {   
+        axis : Axis @+  as composition "";
+  }
+
+abstract otype Axis  ""
+  {   
+        name: ivoa:string  @?   "";
+  }
+
+otype ContinuousAxis  -> Axis ""
+  {   
+        domainMin: ivoa:Quantity  @?   "";
+        domainMax: ivoa:Quantity  @?   "";
+        cyclic: ivoa:boolean  @?   "";
+  }
+
+otype BinnedAxis  -> Axis ""
+  {   
+        length: ivoa:nonnegativeInteger   "";
+  }
+
+otype DiscreteSetAxis  -> Axis ""
+  {   
+  }
+
+otype GenericCoordFrame  -> CoordFrame ""
+  {   
+        refPosition: domain.space.RefLocation   "";
+        planetaryEphem: ivoa:string  @?   "";
+  }
+
+package domain  "The Domain package contains implementations of the Coordinate Frame pattern for various physical domains.  Many of these domains are 1-Dimensional and there is a good deal of consolidation which could take place in those domains (ie 1-1 relations could get absorbed or eliminated).  However, the defined pattern satisfies ALL domains, and we feel the consistancy this generates simplifies the understanding and implementation of the model.  If one understands the pattern, the interpretation of any domain is straight-forward."
+{
+      
+package pixel  "This package implements the Coordinate Frame pattern for the Pixel domain.
+The Pixel coordinate space is defined as a 'virtual' binned space, with no physical meaning.  The axes in this space provide integer indexes into the space."
+{
+      
+dtype PixelIndex  -> BinnedCoordValue ""
+  {   
+  }
+
+otype PixelCoordSystem  -> CoordSys "The PixelCoordSystem contains the complete list of Pixel Frame specifications.  Here, the relation between the system and its frames is different than in the physical CoordSys.  In the pixel domain, there is only 1 system, composed of a specific set of PixelAxes organized in PixelFrames."
+  {   
+        pixelSpace : domain.pixel.PixelSpace as composition "";
+  }
+
+otype PixelSpace  -> CoordSpace ""
+  {   
+        handedness: Handedness  @?   "";
+  }
+
+}
+  
+package space  "Implementation of the Coordinate Frame pattern for the Spatial domain.
+This domain is relatively complex each property of the pattern ( origin, orientation, coordinate space ) has a non-trivial definition and the domain has a higher level of dimensionality.
+"
+{
+      
+    primitive Epoch  ""
+enum StdRefPosition  ""
+{
+TOPOCENTER  "",
+BARYCENTER  "",
+HELIOCENTER  "",
+GEOCENTER  "",
+GALACTIC_CENTER  "",
+LOCAL_GROUP_CENTER  "",
+MOON  "",
+EMBARYCENTER  "",
+MERCURY  "",
+VENUS  "",
+MARS  "",
+JUPITER  "",
+SATURN  "",
+URANUS  "",
+NEPTUNE  "",
+PLUTO  "",
+RELOCATABLE  "",
+LSR  "",
+LSRK  "",
+LSRD  "",
+UNKNOWN  "",
+CUSTOM  ""
+}
+
+enum StdRefFrame  ""
+{
+ICRS  "",
+FK4  "",
+FK5  "",
+ECLIPTIC  "",
+GALACTIC_I  "",
+GALACTIC_II  "",
+SUPER_GALACTIC  "",
+AZ_EL  "",
+BODY  "",
+GEO_C  "",
+GEO_D  "",
+MAG  "",
+GSE  "",
+GSM  "",
+SM  "",
+HGC  "",
+HEE  "",
+HEEQ  "",
+HCI  "",
+HCD  "",
+MERCURY_C  "",
+VENUS_C  "",
+LUNA_C  "",
+MARS_C  "",
+JUPITER_C_III  "",
+SATURN_C_III  "",
+URANUS_C_III  "",
+NEPTUNE_C_III  "",
+PLUTO_C  "",
+MERCURY_G  "",
+VENUS_G  "",
+LUNA_G  "",
+MARS_G  "",
+JUPITER_G_III  "",
+SATURN_G_III  "",
+URANUS_G_III  "",
+NEPTUNE_G_III  "",
+PLUTO_G  "",
+UNKNOWN  "",
+CUSTOM  ""
+}
+
+abstract dtype RefLocation  "RefLocation defines the origin of the spatial coordinate space.  This location is represented either by a standard reference position, or a specified point in another Spatial frame.  This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames.  For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which may be different from the detector location.  
+ "
+  {   
+  }
+
+dtype StdRefLocation  -> domain.space.RefLocation ""
+  {   
+        position: domain.space.StdRefPosition   "";
+  }
+
+dtype CustomRefLocation  -> domain.space.RefLocation ""
+  {   
+        epoch: domain.space.Epoch  @?   "";
+        position: CompositeCoordinate   "";
+        velocity: CompositeCoordinate  @?   "";
+  }
+
+dtype EquatorialCoord  -> domain.space.SpaceCoord ""
+  {   
+        ra: ivoa:RealQuantity  @?   "";
+        dec: ivoa:RealQuantity  @?   "";
+        r: ivoa:RealQuantity  @?   "";
+  }
+
+abstract dtype SpaceCoord  -> Coordinate ""
+  {   
+  }
+
+dtype CartesianCoord  -> domain.space.SpaceCoord ""
+  {   
+        x: ivoa:RealQuantity  @?   "";
+        y: ivoa:RealQuantity  @?   "";
+        z: ivoa:RealQuantity  @?   "";
+  }
+
+dtype LongLatCoord  -> domain.space.SpaceCoord ""
+  {   
+        long: ivoa:RealQuantity  @?   "";
+        lat: ivoa:RealQuantity  @?   "";
+        r: ivoa:RealQuantity  @?   "";
+  }
+
+dtype GalacticCoord  -> domain.space.SpaceCoord ""
+  {   
+        l: ivoa:RealQuantity  @?   "";
+        b: ivoa:RealQuantity  @?   "";
+        r: ivoa:RealQuantity  @?   "";
+  }
+
+dtype EclipticCoord  -> domain.space.SpaceCoord ""
+  {   
+        elong: ivoa:RealQuantity  @?   "";
+        elat: ivoa:RealQuantity  @?   "";
+        r: ivoa:RealQuantity  @?   "";
+  }
+
+otype SpaceFrame  -> CoordFrame ""
+  {   
+        refPosition: domain.space.RefLocation   "";
+        spaceRefFrame: domain.space.StdRefFrame   "";
+        equinox: domain.space.Epoch  @?   "";
+        planetaryEphem: ivoa:string   "";
+  }
+
+}
+  
+package time  "Implementation of the Coordinate Frame pattern for the Time domain.
+This is a basic 1-Dimensional coordinate space."
+{
+      
+enum TimeScale  ""
+{
+TT  "",
+ET  "",
+TDB  "",
+TCG  "",
+TCB  "",
+TAI  "",
+UTC  "",
+LST  "",
+LOCAL  ""
+}
+
+dtype ISOTime  -> domain.time.TimeInstant "The time is represented as a particular instant.  While interchangable with the TimeOffset, this form typically has a defined structure in representation."
+  {   
+        date: ivoa:datetime   "";
+  }
+
+abstract dtype TimeStamp  -> Coordinate ""
+  {   
+  }
+
+dtype JD  -> domain.time.TimeInstant ""
+  {   
+        date: ivoa:real   "";
+  }
+
+dtype MJD  -> domain.time.TimeInstant ""
+  {   
+        date: ivoa:real   "";
+  }
+
+dtype TimeOffset  -> domain.time.TimeStamp ""
+  {   
+        time: ivoa:RealQuantity   "";
+        time0: domain.time.TimeInstant   "";
+  }
+
+abstract dtype TimeInstant  -> domain.time.TimeStamp ""
+  {   
+  }
+
+otype TimeFrame  -> CoordFrame "origin: implied
+dimensionality: 1D
+orientation: n/a
+"
+  {   
+        refPosition: domain.space.RefLocation   "";
+        timescale: domain.time.TimeScale   "";
+        refDirection: domain.space.RefLocation  @?   "";
+  }
+
+}
+  
+package polarization  "Implementation of the Coordinate Frame pattern for the Polarization domain.
+This is a 1-Dimensional coordinate space, but the nature of the polarization coordinate values (discrete enumerated strings) requires a different axis specification."
+{
+      
+enum PolStokesEnum  ""
+{
+I  "",
+Q  "",
+U  "",
+V  ""
+}
+
+enum PolCircularEnum  ""
+{
+RR  "",
+LL  "",
+RL  "",
+LR  ""
+}
+
+enum PolLinearEnum  ""
+{
+XX  "",
+YY  "",
+XY  "",
+YX  ""
+}
+
+enum PolVectorEnum  ""
+{
+I  "",
+PF  "",
+PP  "",
+PA  ""
+}
+
+abstract dtype PolCoordValue  -> CoordValue ""
+  {   
+  }
+
+dtype PolLinear  -> domain.polarization.PolCoordValue ""
+  {   
+        cval: domain.polarization.PolLinearEnum   "";
+  }
+
+dtype PolVector  -> domain.polarization.PolCoordValue ""
+  {   
+        cval: domain.polarization.PolVectorEnum   "";
+  }
+
+dtype PolStokes  -> domain.polarization.PolCoordValue ""
+  {   
+        cval: domain.polarization.PolStokesEnum   "";
+  }
+
+dtype PolCircular  -> domain.polarization.PolCoordValue ""
+  {   
+        cval: domain.polarization.PolCircularEnum   "";
+  }
+
+}
+  
+}
+  

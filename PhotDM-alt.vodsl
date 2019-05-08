@@ -3,7 +3,7 @@ model photdm_alt (0.1) "This is an alternative version of the data model for Pho
      
  author "Gerard Lemson"
  author "Laurent Bourges"
-       include "IVOA.vodsl"
+       include "IVOA-v1.0.vodsl"
      
 dtype S_Bounds  "Could be datatype"
   {   

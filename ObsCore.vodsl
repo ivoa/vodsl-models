@@ -2,7 +2,7 @@
 model obscore (0.1) "This is the VO-DML representation of the ObsCore data model.
 It is ported from the recommendation in http://www.ivoa.net/documents/ObsCore/index.html"
      
-       include "IVOA.vodsl"
+       include "IVOA-v1.0.vodsl"
      
        include "Characterization.vodsl"
      
@@ -59,7 +59,7 @@ otype Curation  ""
         rights: Rights  @?   "";
   }
 
-otype ObsCharacterisation  -> char:Char ""
+otype ObsCharacterisation  -> char:CharacterisationType""
   {   
   }
 
@@ -73,32 +73,32 @@ otype Observation  ""
         access: Access   "";
         curation : Curation as composition "";
         characterisation : ObsCharacterisation as composition "";
-        obsconfig  @?  references Provenance.ObsConfig "";
-        proposal  @?  references Provenance.Proposal "";
+        obsconfig  @?  references provenance:ObsConfig "";
+        proposal  @?  references provenance:Proposal "";
   }
 
 package provenance  ""
 {
       
-otype Detector  -> Provenance.ObservingElement ""
+otype Detector  -> ObservingElement ""
   {   
   }
 
-otype Facility  -> Provenance.ObservingElement ""
+otype Facility  -> ObservingElement ""
   {   
   }
 
-otype Filter  -> Provenance.ObservingElement ""
+otype Filter  -> ObservingElement ""
   {   
   }
 
-otype Instrument  -> Provenance.ObservingElement ""
+otype Instrument  -> ObservingElement ""
   {   
   }
 
 otype ObsConfig  ""
   {   
-        observingElement : Provenance.ObservingElement @*  as composition "";
+        observingElement : ObservingElement @*  as composition "";
   }
 
 abstract otype ObservingElement  ""

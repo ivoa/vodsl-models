@@ -1,0 +1,35 @@
+/*
+ *  created on 24 May 2017 
+ */
+ 
+ model triv (0.1) "description" author "pharriso"
+ 
+ primitive angle ""
+ primitive int ""
+ 
+ otype base "Description"{
+ 	a : angle "";
+ }
+ 
+ 
+  
+ otype deriv -> base "Description" {
+ 	b : int "" ;
+ }
+ 
+ otype dev2 -> base "Description" {
+ 	c : int "Description";
+ }
+ 
+ otype dev3 -> deriv " jjj" {
+ 	d : int "Description";
+ 	e : dev2 as composition "Description";
+ }
+ 
+ otype dev4 -> deriv " jjj" {
+ 	d : int "Description";
+ 	
+ 	ref references dev2 "Description";
+ }
+ 
+ 

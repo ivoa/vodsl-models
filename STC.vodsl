@@ -1,7 +1,7 @@
 
 model stc (1.0) "This is the data model for describing Arnold Rots' STC world."
      
-       include "IVOA.vodsl"
+       include "IVOA-v1.0.vodsl"
      
     primitive coordEquinoxType  "Coordinate equinox: B{year} or J{year} with at least one decimal; do not use in conjunction with ICRS
 String with value restriction:
@@ -632,7 +632,7 @@ Error, Resolution, Size, PixSize elements indicate definite values; pairs indica
 
 dtype timeOffsetType  "Actual elapsed time offset"
   {   
-        value: ivoa:decimal   "";
+        value: ivoa:real  "";
         STCReference: STCReference  @?   "";
         unit: timeUnitType  @?   "";
   }
@@ -643,10 +643,10 @@ Single CError2, CResolution2, CSize2, CPixSize2 elements indicate definite value
         Name1: ivoa:string  @?   "";
         Name2: ivoa:string  @?   "";
         CValue2: double2Type @[0..2]  "";
-        CError2: size2DType @[0..2]  "";
-        CResolution2: size2DType @[0..2]  "";
-        CSize2: size2DType @[0..2]  "";
-        CPixSize2: size2DType @[0..2]  "FOr convenince reuse here the size2DType, even though in model the radius is not used.";
+        CError2: size2DType @[2]  "";
+        CResolution2: size2DType @[2]  "";
+        CSize2: size2DType @[2]  "";
+        CPixSize2: size2DType @[2]  "FOr convenince reuse here the size2DType, even though in model the radius is not used.";
   }
 
 dtype vector3CoordinateType  -> coordinateType "3-D coordinate type.
@@ -655,7 +655,7 @@ Single CError3, CResolution3, CSize3, CPixSize3 elements indicate definite value
         Name1: ivoa:string  @?   "";
         Name2: ivoa:string  @?   "";
         Name3: ivoa:string  @?   "";
-        CValue3: double3Type @[0..2]  "According to substitutiongroups this might also have to be a curve3Type.
+        CValue3: double3Type @[3]  "According to substitutiongroups this might also have to be a curve3Type.
 Logic of this escapes me. Wy would a coordinate be a curve?
 I therefore did not try to acocmodate this in model. ";
         CError3: size3DType @[0..2]  "";

@@ -6,7 +6,7 @@ This data model is a specification of the IVOA Theory Interest Group.
  author "Gerard Lemson"
  author "Laurent Bourge"
  author "Rick Wagner"
-       include "IVOA.vodsl"
+       include "IVOA-v1.0.vodsl"
      
 package rr  ""
 {

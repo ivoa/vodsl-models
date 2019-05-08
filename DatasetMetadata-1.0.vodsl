@@ -3,20 +3,16 @@ model ds (1.0) "This document provides a data model describing the structure and
 "
      
  author "Mark Cresitello-Dittmar, Francois Bonnarel, Omar Laurino, Gerard Lemson, Mireille Louys, Arnold Rots, Doug Tody, and the IVOA Data Model Working Group."
-       include "IVOA.vodsl"
+       include "IVOA-v1.0.vodsl"
      
-       include "Characterization.vodsl"
-     
-       include "STCCoordSys-2.0.vodsl"
-     
-       include "STCCoords-2.0.vodsl"
+       include "STC_meas-v2.0.vodsl"
      
 package experiment  "The Observation Experiment model refers to several elements related to an Observation and its configuration.  As of the time of this writing, there is no IVOA recommendation for a general Observation data model.  The Provenance data model, in progress, will define the pattern for describing the relation between actions and results, and how to record these in datasets.  In lieu of these standards, this document defines a straw-man Observation model.  
 "
 {
       
 otype Observation  "Head class for an Observation Experiment.
-The Observation is modeled as a type of 'Experiment', with some basic structure defined to provide metadata about the observation target and configuration.  The product, or 'result' of the Observation is zero or more ObsDataset objects.  This pattern is inspired by, and compatible with the Simulation Data Model, where a 'Simulation' can be considered another form of 'Experiment' or perhaps even another form of 'Observation'.
+The Observation is modelled as a type of 'Experiment', with some basic structure defined to provide metadata about the observation target and configuration.  The product, or 'result' of the Observation is zero or more ObsDataset objects.  This pattern is inspired by, and compatible with the Simulation Data Model, where a 'Simulation' can be considered another form of 'Experiment' or perhaps even another form of 'Observation'.
 "
   {   
         observationID: ivoa:string   "Internal ID determined by the data provide to uniquely identify the observation within the institution or entity performing the observation.
@@ -56,7 +52,7 @@ abstract otype BaseTarget  "Abstract base class for the Target object tree.  The
 ";
         description: ivoa:string  @?   "Free form description of target.
 ";
-        position  @?  references coords:domain.spatial.Position "";
+        position  @?  references meas:Position "";
   }
 
 otype Target  -> experiment.BaseTarget "General purpose Target object."
@@ -79,7 +75,6 @@ otype AstroTarget  -> experiment.BaseTarget "Extension of BaseTarget specialized
 otype Facility  -> party.Role "Facility performing the observation.
 "
   {   
-        party  references party.Organization "Reference to the Party or Entity which is associated with this role.";
   }
 
 otype Instrument  "Identifies the instrument used to create the data.  This can be a specific instrument name, general type or something else, such as a program in the case of theoretical data.   (RM:Collection.Instrument) "
@@ -93,11 +88,6 @@ otype Proposal  "Metadata related to the proposal or document which spawned the 
   {   
         identifier: ivoa:string   "Tag used to uniquely identify a particular proposal within the institution or entity.
 ";
-  }
-
-otype Characterisation  -> char:CharacterisationType "This Characterisation object is a direct extension of the Characterisation object from the IVOA Characterisation Data Model Standard.  This provides a local object which may be contained in a 'composition' relation to other objects of this model (specifically ObsDataset).  This object may be extended and/or modified by specific Dataset models as needed.
-	Characterisation provides a broad scale description of the coordinate space occupied by the dataset in each of the axis domains.  This includes axes not directly represented in the dataset 'data', for example, the Time axis of a 2D special image.  As such, there is a strong correlation between Characterisation and Data objects.  In some cases, the values may be directly derived from the Data, in others, they provide supporting metadata about the broader domain.  For example, the Accuracy fields in Characterisation represent typical accuracy for the dataset, while those within Data provide per-data-point errors.   "
-  {   
   }
 
 otype Derived  "The Derived (short for Derived Data) object holds derived information obtained by evaluating or analyzing the contents of the dataset.  The specific content of this object is strongly dependent on the specific type of dataset, so we provide a generic model which may be specialized in other models to define elements appropriate for that type of dataset.
@@ -119,14 +109,11 @@ Scale:
 * 2 - Calibrated, science ready data with the instrument signature removed.
 * 3 - Enhanced data products like mosaics, resampled or drizzled images, or heavily processed survey fields.  Level 3 data products may represent the combination of data from multiple primary observations.
 ";
-        characterisation : experiment.Characterisation as composition "Characterisation provides a 'characteristic' view of the dataset coordinate space.  For each represented domain (spatial, spectral, temporal, etc), characterisation provides metadata summarizing the coverage, resolution, representative accuracies, etc. for the dataset asa a whole.";
         derived : experiment.Derived @?  as composition "Provides a high level summary of certain properties of the dataset.  Its primary purpose is to support high level filtering of datasets during data discovery.
 ";
         target  references experiment.BaseTarget "Reference to a BaseTarget object from Observation.  Provides metadata describing the target of the observation.";
         proposal  @?  references experiment.Proposal "Reference to Proposal object from Observation.  This object provides metadata identifying any proposal related to the observation which produced the dataset.";
         obsConfig  @?  references experiment.ObsConfig "Reference to ObsConfig object from Observation.  This object provides some high-level metadata related to the observation configuration.";
-        coordSys  @*  references coordsys:AstroCoordSystem "Zero or more references to coordinate system defintions associated with the dataset.  Since multiple data products may contibute to the content of a dataset, this element provides convenient, high-level access to definitions which may be distributed among lower-level objects.  
-";
   }
 
 abstract otype DerivedElement  "Abstract base for defining derived data elements.  Typically, models for specific data products would extend this object to define various elements appropriate for that model.  For example, the Spectrum model could define signal-to-noise ratio (SNR), or TimeSeries could define period, or variability.  We put no restriction on the DerivedElement content since the result could be a simple value or a complex object.  However, it is recommended that extensions be simple and compact in keeping with the primary intent of use in data discovery.

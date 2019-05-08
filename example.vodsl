@@ -1,18 +1,21 @@
 model example (0.1) "an example model" <"String"> author "Paul Harrison"
 author "another"
 
-include "IVOA.vodsl"
+include "IVOA-v1.0.vodsl"
 
 primitive angle "a new primitive"
 
 package apackage "example package"
 {
+	
+	    primitive p2 "another primitive"
+	    
 		dtype fq -> ivoa:Quantity "a new dtype" {
 			value : ivoa:boolean   "a new boolean";
 		}
 		abstract otype base {
 		    bv : ivoa:anyURI  "Description";
-		    ^author: ivoa:string @? "author"; /* note use of ^ to be able to
+		    ^author: ivoa:string @? "author"; /* note use of ^ to be able to 
 		                                       re-use reserved word.*/	
 		    cc : ivoa:complex "Description";	    
 		}		
@@ -32,11 +35,24 @@ package apackage "example package"
 			f1 : apackage.fq @[6] "an array";
 			f2 : nestedpackage.another as composition "";
 		}
-		package nestedpackage
+		package nestedpackage "nested package"
 		{
-			otype another "" {//same name different package
-				cc : derived as composition "" ;
+			otype another "same name different package" {//same name different package
+				cc : derived @* as composition "" ;
 				rf references apackage.another "a reference";
+			}
+			otype doublenested -> derived {
+				ssi: ivoa:boolean "" ;
+			}
+		}
+		package nestedpackage2 "nested package"
+		{
+			otype another "same name different package" {//same name different package
+				cc : derived @* as composition "" ;
+				rf references apackage.another "a reference";
+			}
+			otype doublenested -> derived {
+				ssi: ivoa:boolean "" ;
 			}
 		}
 		

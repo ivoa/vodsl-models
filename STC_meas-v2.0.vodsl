@@ -1,0 +1,203 @@
+
+model meas (2.0) "
+          TODO : Missing description : please, update your UML model asap.
+        "
+     
+ author "Arnold Rots, Mark Cresitello-Dittmar, Omar Laurino"
+       include "IVOA-v1.0.vodsl"
+     
+       include "STC_coords-v2.0.vodsl"
+     
+abstract dtype Uncertainty  ""
+  {   
+  }
+
+abstract dtype Uncertainty1D  -> Uncertainty ""
+  {   
+  }
+
+abstract dtype Uncertainty2D  -> Uncertainty ""
+  {   
+  }
+
+abstract dtype Uncertainty3D  -> Uncertainty ""
+  {   
+  }
+
+dtype Symmetrical1D  -> Uncertainty1D ""
+  {   
+        radius: ivoa:RealQuantity   "";
+  }
+
+dtype Asymmetrical1D  -> Uncertainty1D ""
+  {   
+        plus: ivoa:RealQuantity   "";
+        minus: ivoa:RealQuantity   "";
+  }
+
+dtype Bounds1D  -> Uncertainty1D ""
+  {   
+        loLimit: ivoa:RealQuantity   "";
+        hiLimit: ivoa:RealQuantity   "";
+  }
+
+dtype Symmetrical2D  -> Uncertainty2D ""
+  {   
+        radius: ivoa:RealQuantity   "";
+  }
+
+dtype Asymmetrical2D  -> Uncertainty2D ""
+  {   
+        plus: ivoa:RealQuantity @[2..2]  "";
+        minus: ivoa:RealQuantity @[2..2]  "";
+  }
+
+dtype Bounds2D  -> Uncertainty2D ""
+  {   
+        loLimit: ivoa:RealQuantity @[2..2]  "";
+        hiLimit: ivoa:RealQuantity @[2..2]  "";
+  }
+
+dtype Symmetrical3D  -> Uncertainty3D ""
+  {   
+        radius: ivoa:RealQuantity   "";
+  }
+
+dtype Asymmetrical3D  -> Uncertainty3D ""
+  {   
+        plus: ivoa:RealQuantity @[3..3]  "";
+        minus: ivoa:RealQuantity @[3..3]  "";
+  }
+
+dtype Bounds3D  -> Uncertainty3D ""
+  {   
+        loLimit: ivoa:RealQuantity @[3..3]  "";
+        hiLimit: ivoa:RealQuantity @[3..3]  "";
+  }
+
+dtype Ellipse  -> Uncertainty2D ""
+  {   
+        semiAxis: ivoa:RealQuantity @[2..2]  "";
+        posAngle: ivoa:RealQuantity   "";
+  }
+
+dtype Ellipsoid  -> Uncertainty3D ""
+  {   
+        semiAxis: ivoa:RealQuantity @[3..3]  "";
+        posAngle: ivoa:RealQuantity @[2..2]  "";
+  }
+
+abstract dtype Matrix  ""
+  {   
+  }
+
+dtype Matrix2x2  -> Matrix ""
+  {   
+        m11: ivoa:real   "";
+        m12: ivoa:real   "";
+        m21: ivoa:real   "";
+        m22: ivoa:real   "";
+  }
+
+dtype Matrix3x3  -> Matrix ""
+  {   
+        m11: ivoa:real   "";
+        m12: ivoa:real   "";
+        m13: ivoa:real   "";
+        m21: ivoa:real   "";
+        m22: ivoa:real   "";
+        m23: ivoa:real   "";
+        m31: ivoa:real   "";
+        m32: ivoa:real   "";
+        m33: ivoa:real   "";
+  }
+
+dtype CovarianceMatrix2D  -> Uncertainty2D ""
+  {   
+        matrix: Matrix2x2   "";
+  }
+
+dtype CovarianceMatrix3D  -> Uncertainty3D ""
+  {   
+        matrix: Matrix3x3   "";
+  }
+
+abstract otype CoordMeasure  -> Measure ""
+  {   
+        coord: coords:Coordinate   "";
+        error : Error @?  as composition "";
+  }
+
+abstract otype Error  ""
+  {   
+  }
+
+abstract otype Error1D  -> Error ""
+  {   
+        statError: Uncertainty1D  @?   "";
+        sysError: Uncertainty1D  @?   "";
+        ranError: Uncertainty1D  @?   "";
+  }
+
+abstract otype Error2D  -> Error ""
+  {   
+        statError: Uncertainty2D  @?   "";
+        sysError: Uncertainty2D  @?   "";
+        ranError: Uncertainty2D  @?   "";
+  }
+
+abstract otype Error3D  -> Error ""
+  {   
+        statError: Uncertainty3D  @?   "";
+        sysError: Uncertainty3D  @?   "";
+        ranError: Uncertainty3D  @?   "";
+  }
+
+otype GenericCoordMeasure  -> CoordMeasure ""
+  {   
+  }
+
+abstract otype Position  -> CoordMeasure ""
+  {   
+  }
+
+otype Position1D  -> Position ""
+  {   
+  }
+
+otype Position2D  -> Position ""
+  {   
+  }
+
+otype Position3D  -> Position ""
+  {   
+  }
+
+otype SpectralCoordMeasure  -> CoordMeasure ""
+  {   
+  }
+
+otype TimeMeasure  -> CoordMeasure ""
+  {   
+  }
+
+otype Polarization  -> Measure ""
+  {   
+        coord: coords:domain.polarization.PolCoordValue   "";
+  }
+
+otype StdPosition  -> Position ""
+  {   
+  }
+
+otype GenTimeMeasure  -> TimeMeasure ""
+  {   
+  }
+
+otype StdTimeMeasure  -> TimeMeasure ""
+  {   
+  }
+
+abstract otype Measure  ""
+  {   
+  }
