@@ -33,9 +33,7 @@ It should be noted that there are several versions of STC present
 
 - STC.vodsl is an attempt at a representation of the original STC version 1 - it has many errors, but
 can be useful for other models that depend on STC v.1
-- VO-DML-STC2.vodsl is an early attempt to represent STC version 2 in VO-DML - it too has many errors and is effectively
-superseded by 
-- STCCoordSys-2.0.vodsl, STCCoords-2.0.vodsl and STCTrans-2.0.vodsl which is a new modularisation of the STC2, and is error-free.
+- STC_coords-v1.0.vodsl, STC_meas-v1.0.vodsl and STC_trans-v1.0.vodsl which is a new modularisation of the STC2, and is error-free.
 
 
 Editing in Eclipse

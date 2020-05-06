@@ -1,0 +1,221 @@
+
+model voprov (1.0) "Data model describing the structure and content of the IVOA Provenance Data Model. This re-uses the concepts from the W3C Provenance DM, but extends it with a description layer for Activities and Entities. The « voprov » name has ben choosen to avoid clashing with W3C « prov » namespace"
+     
+ author "Servillat Mathieu, Riebe Kristin, Boisson Catherine, Bonnarel François, Galkin Anastasia, Louys Mireille, Nullmeier Markus, Renault-Tinnaci Sanguillon Michèle, Streicher Ole"
+       include "IVOA-v1.0.vodsl"
+     
+    primitive VotableFieldFormat  "Field format as defined in the VOTable specification"
+enum AgentType  "A literal for specifying the Agent type : Individal or Organisation or SoftwareAgent"
+{
+Person  "Type label for agents considered as persons",
+Organization  "Type label for agents considered as organizations",
+SoftwareAgent  "Type label for agents considered as software agents"
+}
+
+otype Agent  "A person or an organisation that was involved in the follow-up of an Activity, or can be credited for the production of an Entity."
+  {   
+        id: ivoa:string   "Unique identifier for an Agent. Must be unique in the domain.";
+        name: ivoa:string   "Agent name";
+        type: AgentType  @?   "Defines the Agent type : Person, Organization or SoftwareAgent";
+        comment: ivoa:string  @?   "A text about some peculiar information on the instance.";
+        email: ivoa:string  @?   "Email address of the Agent";
+        affiliation: ivoa:string  @?   "Agent's affiliation";
+        phone: ivoa:string  @?   "Agent's phone number";
+        address: ivoa:string  @?   "Agent's postmail address";
+        url: ivoa:anyURI  @?   "Reference URL to the agent";
+  }
+
+otype WasAssociatedWith  "Denotes the assignment of responsibility to an agent for an activity."
+  {   
+        role: ivoa:string  @?   "Function of the agent with respect to the activity
+";
+        agent  references Agent "Points to the agent";
+  }
+
+otype WasAttributedTo  "Links an Agent to the Entity it is responsible for. Various roles for this relation are allowed and defined in the Provenance vocabulary under TypeOfAgentRole"
+  {   
+        role: ivoa:string  @?   "Function of the agent with respect to the entity. ";
+        agent  references Agent "Points to the agent.";
+  }
+
+otype Activity  "A task executed at some time. It consumes products via relations of type Used and produces results via relations of type WasGeneratedBy. 
+The method applied for this task is described in the ActivityDescription class and its subtree."
+  {   
+        id: ivoa:string   "Unique identifier for an Activity. Must be unique in the domain.";
+        name: ivoa:string  @?   "Activity name";
+        startTime: ivoa:datetime  @?   "This allows to know when the activity was launched . 
+This is might help to check dependencies and errors into the database.";
+        endTime: ivoa:datetime  @?   "Time when the Activity ends up.";
+        comment: ivoa:string  @?   "A text about some peculiar information on the instance.";
+        wasAssociatedWith : WasAssociatedWith @*  as composition "Gathers Agents bound to this Activity instance";
+        used : Used @*  as composition "Gathers Entities used by the Activity instance";
+        wasConfiguredBy : ActivityConfiguration.WasConfiguredBy @*  as composition "Gathers Configuration elements for this Activity instance";
+        informant  @*  references Activity "refers to an activity providing information";
+        activityDescription  @?  references ActivityDescription "Points to the corresponding description class";
+  }
+
+otype Used  "Binds an Activity to the Entities it consumes ."
+  {   
+        role: ivoa:string  @?   "function of the entity with respect to the activity";
+        time: ivoa:datetime  @?   "Time at which the usage of an entity started";
+        entity  references Entity "Points to the used entity";
+        usageDescription  @?  references UsageDescription "This link points to  some description of the Usage in the context of one specific ActivityDescription.";
+  }
+
+otype Entity  "A thing which is consumed or produced in a task , namely here in the astronomical domain. It represents some data as single element or file or an instrument.
+
+"
+  {   
+        id: ivoa:string   "Unique identifier for an Entity. Must be unique in the domain.
+";
+        name: ivoa:string  @?   "This is a text string which designate the Entity for display in application or diagrams . It can follow various syntax and naming conventions depending on the Entity subclass : dataset, quality flag, device name convention, etc .
+";
+        location: ivoa:string  @?   "A path,  a URL, coordinates or the name of a place.";
+        generatedAtTime: ivoa:datetime  @?   "The time and date of generation for the entity. The format is chosen by the provider e.g. ISO 8601 
+";
+        invalidatedAtTime: ivoa:datetime  @?   "Date and time of invalidation of the entity. After that date, the entity is no longer available for any use.";
+        comment: ivoa:string  @?   "A text about some peculiar information on the instance.";
+        wasGeneratedBy : WasGeneratedBy @?  as composition "Binds to the activity which generated this entity";
+        wasAttributedTo : WasAttributedTo @*  as composition "Gathers Agents to which the entity was attributed";
+        usedEntity  @*  references Entity "The link from the progenitor Entity to its descendant.";
+        entityDescription  @?  references EntityDescription "Link to the corresponding EntityDescription instance.  Many Entities may share the same  EntityDescription instance.";
+  }
+
+otype WasGeneratedBy  "Binds an Entity to the Activity that produced it as a result."
+  {   
+        role: ivoa:string  @?   "Function of the entity with respect to the activity.";
+        activity  references Activity "points to the creating Activity instance.";
+        generationDescription  @?  references GenerationDescription "Points to the instance of GenerationDescription describing this kind of generated output.";
+  }
+
+otype Collection  -> Entity "A collection of Entities. It is a way to consider a set of entities when produced and consumed with respect to an Activity. 
+Allows coarse description of the provenance."
+  {   
+        entity  @*  references Entity "Binds a collection entity to its members";
+  }
+
+otype ValueEntity  -> Entity "An entity that only contains a value. The way to interpret this value is described in the ValueDescription instance it linked to."
+  {   
+        value: ivoa:string   "The value of the Entity.";
+  }
+
+otype DatasetEntity  -> Entity "An Entity which represents a data file in the Provenance system. It is not the data file itself"
+  {   
+  }
+
+otype ActivityDescription  "Gives further information on how an activity works internally."
+  {   
+        name: ivoa:string   "Instance name";
+        version: ivoa:string  @?   "Version number, if applicable";
+        description: ivoa:string  @?   "A descriptive text for this kind of activity";
+        docurl: ivoa:anyURI  @?   "Link to more documentation";
+        type: ivoa:string  @?   "type of the activity";
+        subtype: ivoa:string  @?   "More specific subtype of the activity";
+        parameterDescription : ActivityConfiguration.ParameterDescription @*  as composition "Gathers the description classes explaining the Parameter object that can be applied when running an Activity  that can follow this ActivityDescription template. ";
+        configFileDescription : ActivityConfiguration.ConfigFileDescription @*  as composition "Gathers the description of the config files";
+        usageDescription : UsageDescription @*  as composition "This link points to  some description of the Usage in the context of one specific ActivityDescription.";
+        generationDescription : GenerationDescription @*  as composition "This link points to  some description of the results produced in the context of one specific ActivityDescription.";
+  }
+
+otype UsageDescription  "This class gathers description features about the products an ActivityDescription considers as input resources. It can differentiate various roles and types of Entities consumed by the task described by the corresponding ActivityDescription instance."
+  {   
+        role: ivoa:string   "Function of the entity with respect to its usage by the activity.";
+        description: ivoa:string  @?   "A descriptive text for this kind of usage
+";
+        type: ivoa:string  @?   "type of the usage. It is a free text attribute with some reserved words";
+        multiplicity: ivoa:string  @?   "Number of expected input entities to be used with the given role. The string syntax is similar to that of VO-DML in the form ‘minOccurs..maxOccurs” or a single value if minOccurs and maxOccurs are identical.";
+        entityDescription  @*  references EntityDescription "Points to the description of the used entities";
+  }
+
+otype GenerationDescription  "This class gathers description features about the products an ActivityDescription considers as output results."
+  {   
+        role: ivoa:string   "A label that describes the function of what was produced. It is defined in the context of an ActivityDescription instance.";
+        description: ivoa:string  @?   "A descriptive text for this kind of entity generation";
+        type: ivoa:string  @?   "Type of the entity generation. It is a free text attribute with some reserved words";
+        multiplicity: ivoa:string  @?   "Number of expected input entities to be generated with the given role. The string syntax is similar to that of VO-DML in the form ‘minOccurs..maxOccurs” or a single value if minOccurs and maxOccurs are identical.";
+        entityDescription  @*  references EntityDescription "Points to the description of the used entities";
+  }
+
+otype EntityDescription  "This class is meant to store descriptive information for
+different categories of entities."
+  {   
+        name: ivoa:string   "Instance name
+";
+        description: ivoa:string  @?   "A descriptive text for this kind of entity";
+        docurl: ivoa:anyURI  @?   "Link to more documentation";
+        type: ivoa:string  @?   "Type of the entity";
+  }
+
+otype ValueDescription  -> EntityDescription "Description of the properties of a ValueEntity."
+  {   
+        valueType: VotableFieldFormat   "VOTable compliant data type of the parameter value";
+        unit: ivoa:Unit  @?   "VO unit string";
+        ucd: ivoa:string  @?   "VO-compliant UCD string";
+        utype: ivoa:string  @?   "Role of the value in the context of an external VO data mode";
+  }
+
+otype DatasetDescription  -> EntityDescription "The description of a DatasetEntity. Can be pointed to by multiple instances of DatasetEntity."
+  {   
+        contentType: ivoa:string   "MIME-type or format of the dataset";
+  }
+
+package ActivityConfiguration  "This package gathers the necessary classes for expressing the configuration of a task before, during and after execution. 
+We consider only the executed version will be stored in a provenance information system."
+{
+      
+enum TypeOfConfigArtefact  "The configuration for an Activity ( job)  can be fully explicit , with a list of searchable parameters , or expressed into a document file storing the configuration . This attribute contains the type of config information at the end of the wasConfiguredby association instance ."
+{
+Parameter  "Label for parameter config artifact",
+Configfile  "Label for config file config artifact"
+}
+
+otype ParameterDescription  "How to both use and interpret the parameter"
+  {   
+        name: ivoa:string   "Name of the parameter";
+        valueType: VotableFieldFormat   "VOTable compliant data type of the parameter value";
+        unit: ivoa:Unit  @?   "VO unit string ";
+        ucd: ivoa:string  @?   "Unified Content Descriptor, supplying a standardized classification of the physical quantity";
+        utype: ivoa:string  @?   "Expresses the role of the parameter in the context of VO data mode text";
+        min: ivoa:string  @?   "Minimum parameter value as a string whose value can be interpreted by the valueType attribute";
+        max: ivoa:string  @?   "Maximum parameter value as a string whose value can be interpreted by the valueType attribute";
+        default: ivoa:string  @?   "Default parameter value as a string whose value can be interpreted by the valueType attribute.";
+        options: ivoa:string  @*   "array of possible values";
+        description: ivoa:string  @?   "A text that explains the content and purpose of this Parameter.";
+  }
+
+otype ConfigFileDescription  "Properties of the configuration files"
+  {   
+        name: ivoa:string   "Name of the instance";
+        contentType: ivoa:string   "MIME-type or format of the configuration file";
+        description: ivoa:string  @?   "A text that explains the content and purpose of the configuration file.";
+  }
+
+otype Parameter  "A simple value which is part of the configuration of an activity instance"
+  {   
+        value: ivoa:string   "The value of the parameter. The data  type, meaning, units, etc., are stored in the ParameterDescription instance bound to it.";
+        name: ivoa:string   "Name of the parameter";
+        valueEntity  @?  references ValueEntity "A Parameter instance can have a value derived from a ValueEntity value element computed previously by some former Activity instance. Therefore, the ValueEntity it refers to is generated with another instance of the Activity class, in a different generation scenario executed previously.
+This references such a ValueEntity from the Parameter instance.";
+        parameterDescription  @?  references ActivityConfiguration.ParameterDescription "Gathers the properties and the description of the Parameter instance. ";
+  }
+
+otype ConfigFile  "The values used to control the activity can be provided as a Configuration file document.
+"
+  {   
+        name: ivoa:string   "Name of the file";
+        location: ivoa:string  @?   "Path or URL to the config file";
+        comment: ivoa:string  @?   "text containing comments on the config file";
+        configFileDescription  @?  references ActivityConfiguration.ConfigFileDescription "Points to the corresponding description class";
+  }
+
+otype WasConfiguredBy  "This is an association class binding an Activity Instance to one configuration artefact which can be a Parameter instance  or a ConfigFile instance . 
+Attribute 'artefactType' holds the type of its target ."
+  {   
+        artefactType: ActivityConfiguration.TypeOfConfigArtefact   "Object type pointed by the instance
+";
+        configFile  @?  references ActivityConfiguration.ConfigFile "Points to the configuration file";
+        parameter  @?  references ActivityConfiguration.Parameter "points to parameter";
+  }
+
+}
+  

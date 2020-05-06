@@ -9,7 +9,7 @@
       <author>Paul Harrison</author>
       <author>another</author>
       <version>0.1</version>
-      <lastModified>2019-05-08T17:05:07Z</lastModified>
+      <lastModified>2019-05-28T13:22:52Z</lastModified>
       <import>
         <name>tbd</name><!--should be able to work out from the included model -->
         <url>IVOA-v1.0.vo-dml.xml</url>
@@ -163,7 +163,7 @@
                              </datatype>
                              <multiplicity>
                                <minOccurs>6</minOccurs>
-                               <maxOccurs>0</maxOccurs>
+                               <maxOccurs>6</maxOccurs>
                              </multiplicity>
                            </attribute>
                            <composition>

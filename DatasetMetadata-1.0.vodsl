@@ -5,7 +5,7 @@ model ds (1.0) "This document provides a data model describing the structure and
  author "Mark Cresitello-Dittmar, Francois Bonnarel, Omar Laurino, Gerard Lemson, Mireille Louys, Arnold Rots, Doug Tody, and the IVOA Data Model Working Group."
        include "IVOA-v1.0.vodsl"
      
-       include "STC_meas-v2.0.vodsl"
+       include "STC_meas-v1.0.vodsl"
      
 package experiment  "The Observation Experiment model refers to several elements related to an Observation and its configuration.  As of the time of this writing, there is no IVOA recommendation for a general Observation data model.  The Provenance data model, in progress, will define the pattern for describing the relation between actions and results, and how to record these in datasets.  In lieu of these standards, this document defines a straw-man Observation model.  
 "

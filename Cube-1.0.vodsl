@@ -8,16 +8,16 @@ model cube (1.0) "
      
        include "DatasetMetadata-1.0.vodsl"
      
-       include "STC_coords-v2.0.vodsl"
+       include "STC_coords-v1.0.vodsl"
      
-       include "STC_meas-v2.0.vodsl"
+       include "STC_meas-v1.0.vodsl"
      
-       include "STC_trans-v2.0.vodsl"
+       include "STC_trans-v1.0.vodsl"
      
 otype NDImage  -> DataProduct ""
   {   
         data : Voxel @*  as composition "";
-        pixelCoordSys : coords:domain.pixel.PixelCoordSystem as composition "";
+        pixelCoordSys : coords:PixelCoordSystem as composition "";
   }
 
 otype SparseCube  -> DataProduct ""
@@ -28,7 +28,7 @@ otype SparseCube  -> DataProduct ""
 abstract otype DataProduct  ""
   {   
         coordSys : coords:CoordSys @+  as composition "";
-        mappings : trans:Mappings @?  as composition "";
+        mappings : Mappings @?  as composition "";
         dataset  references ds:dataset.Dataset "";
   }
 
@@ -51,7 +51,7 @@ abstract otype DataAxis  ""
 
 otype PixelAxis  -> ImageAxis ""
   {   
-        coord: coords:domain.pixel.PixelIndex   "";
+        coord: coords:PixelIndex   "";
   }
 
 abstract otype MeasurementAxis  -> DataAxis ""
@@ -75,7 +75,7 @@ otype VirtualMeasure  -> meas:Measure ""
   {   
         result_type: ivoa:string   "";
         source  @+  references meas:Measure "";
-        transform  @?  references Transform "";
+        transform  references trans:Mapping "";
         result_frame  @?  references coords:CoordFrame "";
   }
 
@@ -83,10 +83,11 @@ otype VirtualImageAxis  -> ImageAxis ""
   {   
         result_type: ivoa:string   "";
         source  @+  references ImageAxis "";
-        transform  @?  references Transform "";
+        transform  references trans:Mapping "";
         result_frame  @?  references coords:CoordFrame "";
   }
 
-abstract otype Transform  ""
+otype Mappings  ""
   {   
+        transform : trans:Mapping @+  as composition "";
   }

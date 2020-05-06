@@ -236,16 +236,17 @@ enum <xsl:value-of select="name"/><xsl:text> </xsl:text>
   <xsl:text> unique</xsl:text>
 </xsl:template>
 
-<!-- need to do something with identifier and uri... -->
-<xsl:template match="*"> <!-- catchall to indicate where there might be missed element to highlight when VODML might have changed-->
-  <xsl:value-of select="concat('***',name(.),'*** ')"/>
-   <xsl:apply-templates/>
-</xsl:template>
-
 
 <xsl:template match="text()|*">
   <xsl:value-of select="."/>
 </xsl:template>
 
+ <!-- catchall to indicate where there might be missed element to highlight when VODML might have changed
+<xsl:template match="*">
+  <xsl:value-of select="concat('***',name(.),'*** ')"/>
+   <xsl:apply-templates/>
+</xsl:template>
+
+-->
 
 </xsl:stylesheet>
