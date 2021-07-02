@@ -16,7 +16,6 @@ Paul Harrison
  <xsl:output method="text" encoding="UTF-8" indent="no" />
   
   <xsl:param name="model.name" select="'silly'"/>
-  <xsl:param name="usesubgraph" select="'F'"/>
   
   <xsl:strip-space elements="*" />
   

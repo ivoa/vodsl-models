@@ -90,9 +90,9 @@ otype Error  "The Error class uses the Uncertainty types to describe measurement
         sysError: Uncertainty  @?   "Systematic error.  The Uncertainty type MUST be dimensionally compatible with the associated Measure value.";
   }
 
-otype GenericMeasure  -> Measure "The most generic Measure class.  This class may be used to represent any data not covered by the specialized cases.  The coordinate value type allows for the construction of multi-dimensional values to accommodate virtually any case.  "
+otype GenericMeasure  -> Measure "The most generic Measure class.  This class may be used to represent data not covered by the specialized cases."
   {   
-        coord: coords:PhysicalCoordinate   "The measured coordinate value.  May be of any dimensionality (current support 1,2 and 3-dimension).  For many cases, the Standard1DCoord should suffice, providing a clean and simple representation of the measured value.  For other cases, users will need to provide a complete coordinate description.";
+        coord: coords:PhysicalCoordinate   "The measured coordinate value.";
   }
 
 otype Position  -> Measure "Provides a complete description of a measured positional instant."

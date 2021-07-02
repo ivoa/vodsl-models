@@ -11,6 +11,7 @@
 <project name="project" default="alltodsl">
 	
 	<property name="vodmlbase" location="/Users/pharriso/Work/volute/projects/dm/"/>
+	<property name="xsdbase" location="/Users/pharriso/Work/javastro/ivoa-schema/src/schema/"/>
     <target name="alltodsl"  description="description">
     	<todsl model="IVOA" sdir="vo-dml/models/ivoa"/> 
     	<todsl model="Characterization" sdir="vo-dml/models/characterization"/>
@@ -25,11 +26,11 @@
     	<todsl model="Sample" sdir="vo-dml/models/sample/sample/"/>
     	<todsl model="Filter" sdir="vo-dml/models/sample/filter/"/>
         <todsl model="DatasetMetadata-1.0" sdir="DatasetMetadata/vo-dml/"/>
-     	<todsl model="CAOM-2.3" sdir="vo-dml/models/caom2/"/>
-        <todsl model="STC_coords-v2.0" sdir="STC/vo-dml/"/>
-        <todsl model="STC_meas-v2.0" sdir="STC/vo-dml/"/>
-        <todsl model="STC_trans-v2.0" sdir="STC/vo-dml/"/>
-        <todsl model="ProvenanceDM" sdir="provenance/vo-dml/xml/"/>
+        <todsl model="STC_coords-v1.0" sdir="STC/Coords/vo-dml/"/>
+        <todsl model="STC_meas-v1.0" sdir="STC/Meas/vo-dml/"/>
+        <todsl model="STC_trans-v1.0" sdir="STC/Trans/vo-dml/"/>
+     	<todsl model="Cube-1.0" sdir="Cube/vo-dml/" />
+        <todsl model="Provenance" sdir="provenance/ProvDM/vo-dml/"/>
 	
     </target>
 	
@@ -37,9 +38,20 @@
           target: fewdsl              
          ================================= -->
     <target name="fewdsl"  description="do a few transformations">
-     	<todsl model="Cube-1.0" sdir="Cube/vo-dml/" />
-  	
+    	<todsl model="SKA-MSv3-0.1" sdir="vo-dml/models/SKA-MSv3/vo-dml/"/>
+        <fromxsd model="VOResource-v1.1" />
+        <fromxsd model="VODataService-v1.2" />
+ 	
     </target>
+	
+	<target name="CAOM" description="CAOM transformation">
+    <!--  <get src="https://www.opencadc.org/caom2/xml/CAOM-2.3-vodml.xml" dest="CAOM.vodml.xml"/> -->
+  	 <xslt style="vo-dml2dsl.xsl" in="CAOM.vodml.xml" out="CAOM.vodsl" force="true">
+  	 	
+  	 	<factory name="net.sf.saxon.TransformerFactoryImpl" />
+	 </xslt>
+    <!-- <delete file="CAOM.vodml.xml"></delete> -->
+	</target>
 
 
 	
@@ -54,6 +66,18 @@
        	</xslt>
         </sequential>
     </macrodef>
+	
+    <macrodef name="fromxsd">
+        <attribute name="model" />
+        <sequential>
+      	<xslt style="xsd2dsl.xsl" in="${xsdbase}/@{model}.xsd" out="@{model}.vodsl" force="true" >
+      		<factory name="net.sf.saxon.TransformerFactoryImpl" />
+<!--                  <param name="docversion" expression="${docversion}"/> -->
+      		
+       	</xslt>
+        </sequential>
+    </macrodef>
+
 
 
 </project>

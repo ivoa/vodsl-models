@@ -1,9 +1,9 @@
 
-model trans (1.0) "The transform model defines objects which can be used to construct expressions representing the relation between two coordinate systems.  These may be used to transform coordinates and other objects defined in one coordinate system into corresponding objects in another coordinate system.  There are two primary components to the model, the 'Mapping', and the 'TransformSet'.
+model trans (1.0) "The transform model defines objects which can be used to construct expressions representing the relation between two coordinate systems.  These may be used to transform coordinates and other objects defined in one coordinate system into corresponding objects in another coordinate system.  There are two primary components to the model, the "Mapping", and the "TransformSet".
 
-The 'Mapping' object defines how to transform a set of 'input' scalar values into a corresponding set of 'output' scalar values.   The Mapping supports transforms in either direction via 'operations' which we refer to as the forward and inverse operations.  The forward operation transforms the mapping inputs into mapping outputs.  The inverse operation transforms the mapping outputs into mapping inputs.  
+The "Mapping" object defines how to transform a set of "input" scalar values into a corresponding set of "output" scalar values.   The Mapping supports transforms in either direction via "operations" which we refer to as the forward and inverse operations.  The forward operation transforms the mapping inputs into mapping outputs.  The inverse operation transforms the mapping outputs into mapping inputs.  
 
-The 'TransformSet' object gives physical context to the 'Mapping' by relating a parent coordinate system to a target coordinate system via a Mapping.  The TransformSet model structure allows for the association of groups of inter-related coordinate systems.
+The "TransformSet" object gives physical context to the "Mapping" by relating a parent coordinate system to a target coordinate system via a Mapping.  The TransformSet model structure allows for the association of groups of inter-related coordinate systems.
 
 Since a mapping expression can involve multiple steps between end points, we separate these features, such that the Mapping provides the path, and the TransformSet associates a Mapping with its source and target coordinate systems.
 "
