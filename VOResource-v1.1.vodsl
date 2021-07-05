@@ -9,6 +9,14 @@ model VOResource (1.1)
         schema.
       "
       include "IVOA-v1.0.vodsl"
+   
+   
+abstract dtype baseURL "base for annotated URLs" {
+	url : ivoa:anyURI "the URL";
+} 
+abstract dtype baseString "base for annotated string" {
+	value : ivoa:string "the value";
+} 
      
 enum status_enum 
 {
@@ -61,7 +69,7 @@ otype Resource  "
            describable and identifiable by an IVOA Identifier. 
          "
   {   
-        validationLevel: Validation  @*   "
+        validationLevel: Validation  @*  as composition "
                   A numeric grade describing the quality of the
                   resource description, when applicable, 
                   to be used to indicate the confidence an end-user
@@ -102,10 +110,10 @@ otype Resource  "
                   here, e.g., doi:10.1016/j.epsl.2011.11.037.  For bibcodes,
                   use a form like bibcode:2008ivoa.spec.0222P.
                ";
-        curation: Curation   "
+        curation: Curation as composition  "
                Information regarding the general curation of the resource
              ";
-        content: Content   "
+        content: Content as composition  "
                Information regarding the general content of the resource
              ";
         created: UTCTimestamp   "
@@ -147,17 +155,17 @@ enum ValidationLevel  "
          these values.  
        "
 {
-0  "
+a  "
               The resource has a description that is stored in a
               registry. This level does not imply a compliant
               description. 
             ",
-1  "
+b  "
               In addition to meeting the level 0 definition, the
               resource description conforms syntactically to this
               standard and to the encoding scheme used. 
             ",
-2  "
+c  "
               In addition to meeting the level 1 definition, the
               resource description refers to an existing resource that
               has demonstrated to be functionally compliant. 
@@ -172,7 +180,7 @@ enum ValidationLevel  "
               not a service, then the ReferenceURL must be shown to
               return a document without error. 
             ",
-3  "
+d  "
               In addition to meeting the level 2 definition, the
               resource description has been inspected by a human and
               judged to comply semantically to this standard as well
@@ -180,7 +188,7 @@ enum ValidationLevel  "
               providing values for important but non-required
               metadata) set by the human inspector.
             ",
-4  "
+e  "
               In addition to meeting the level 3 definition, the
               resource description meets additional quality criteria
               set by the human inspector and is therefore considered
@@ -191,19 +199,20 @@ enum ValidationLevel  "
 }
 
 
-dtype Validation  -> ValidationLevel "
+otype Validation  "
          a validation stamp combining a validation level and the ID of 
          the validator.
        "
-  {   
+  {  
+  	    level : ValidationLevel "the validation level";
         validatedBy: ivoa:anyURI   "
                The IVOA ID of the registry or organisation that
                assigned the validation level.  
              ";
   }
 
-primitive AuthorityID  -> ivoa:string
-primitive ResourceKey  -> ivoa:string
+primitive AuthorityID  -> ivoa:string "" 
+primitive ResourceKey  -> ivoa:string "" 
 primitive IdentifierURI  -> ivoa:anyURI "
             A reference to a registry record.
          
@@ -236,7 +245,7 @@ otype Curation  "
                Entity (e.g. person or organisation) responsible for making the 
                resource available
              ";
-        creator: Creator  @*   "Creator
+        creator: Creator  @* as composition  "Creator
                 The entity/ies (e.g. person(s) or organisation) primarily responsible 
                 for creating the content or constitution of the resource.
              
@@ -258,18 +267,19 @@ otype Curation  "
                Label associated with creation or availablilty of a version of 
                a resource.
              ";
-        contact: Contact  @+   "
+        contact: Contact  @+ as composition  "
                Information that can be used for contacting someone with
                regard to this resource.
              ";
   }
 
-dtype ResourceName  -> ivoa:string "
+dtype ResourceName  "
          The name of a potentially registered resource.  That is, the entity
          referred to may have an associated identifier.
        "
   {   
-        ivo-id: IdentifierURI   "
+  	    name : ivoa:string "the name of the resource";
+        ivoid: IdentifierURI   "
                 The IVOA identifier for the resource referred to.
               ";
   }
@@ -299,7 +309,7 @@ otype Contact  "
                  scheme, e.g., orcid.  Always use a URI form including
                  a scheme here.
               ";
-        ivo-id: IdentifierURI   "
+        ivoid: IdentifierURI   "
              An IVOA identifier for the contact (typically when it is
              an organization).
            ";
@@ -333,14 +343,15 @@ otype Creator  "
                  scheme, e.g., orcid.  Always use a URI form including
                  a scheme here.
               ";
-        ivo-id: IdentifierURI   "
+        ivoid: IdentifierURI   "
              An IVOA identifier for the creator (typically when it is
              an organization).
            ";
   }
 
-dtype Date  -> UTCDateTime
+dtype Date  "" 
   {   
+  	    date: ivoa:datetime "the date";
         role: ivoa:string   "
                  A string indicating what the date refers to.  
                
@@ -412,12 +423,12 @@ otype Content  "
                 vocabulary
                 http://www.ivoa.net/rdf/voresource/content_level.
              ";
-        relationship: Relationship  @*   "
+        relationship: Relationship  @* as composition  "
                a description of a relationship to another resource.  
              ";
   }
 
-dtype Source  -> ivoa:string
+dtype Source  -> baseString "" 
   {   
         format: ivoa:string   "
                  The reference format.  Recognized values include “bibcode”, 
@@ -466,7 +477,7 @@ otype Service  "
   {   
   }
 
-dtype Rights  -> ivoa:string "
+dtype Rights  -> baseString "
             A statement of usage conditions.  This will typically
             include a license,
             which should be given as a full string (e.g., Creative Commons
@@ -490,7 +501,7 @@ otype Capability  "
             an interface)
          "
   {   
-        validationLevel: Validation  @*   "
+        validationLevel: Validation  @* as composition  "
                   A numeric grade describing the quality of the
                   capability description and interface, when applicable, 
                   to be used to indicate the confidence an end-user
@@ -508,7 +519,7 @@ otype Capability  "
                   this capability is non-standard and is one of several 
                   capabilities listed.
                ";
-        interface: Interface  @*   "
+        interface: Interface  @* as composition  "
                   a description of how to call the service to access
                   this capability
                
@@ -617,7 +628,7 @@ abstract otype Interface  "
             ";
   }
 
-dtype AccessURL  -> ivoa:anyURI
+dtype AccessURL  -> baseURL "" 
   {   
         use: use_enum   "
                A flag indicating whether this should be interpreted as a base
@@ -629,7 +640,7 @@ dtype AccessURL  -> ivoa:anyURI
              ";
   }
 
-dtype MirrorURL  -> ivoa:anyURI "
+dtype MirrorURL  -> baseURL "
             A URL of a mirror (i.e., a functionally identical additional 
             service interface) to 
          "
@@ -641,7 +652,7 @@ dtype MirrorURL  -> ivoa:anyURI "
                ";
   }
 
-otype SecurityMethod  "
+dtype SecurityMethod  "
             a description of a security mechanism.
          
             This type only allows one to refer to the mechanism via a
