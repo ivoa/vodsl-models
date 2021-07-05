@@ -114,7 +114,7 @@ package <xsl:value-of select="concat(name,' ')"/> <xsl:apply-templates select= "
 <xsl:template match="xs:complexType[xs:simpleContent]">
   <xsl:value-of select="$nl"/><xsl:if test="@abstract">abstract </xsl:if>dtype <xsl:value-of select="@name"/><xsl:text> </xsl:text>
   <xsl:apply-templates select= "xs:simpleContent/xs:extension"/>
-  <xsl:apply-templates select= "xs:annotation"/>
+  <xsl:call-template name="doAnnotation"/>
   {   <xsl:apply-templates select="xs:simpleContent/xs:extension/*"/>
   }
 </xsl:template>
@@ -123,7 +123,7 @@ package <xsl:value-of select="concat(name,' ')"/> <xsl:apply-templates select= "
 <xsl:template match="xs:complexType[xs:complexContent]">
   <xsl:value-of select="$nl"/><xsl:if test="@abstract">abstract </xsl:if>otype <xsl:value-of select="@name"/><xsl:text> </xsl:text>
   <xsl:apply-templates select= "xs:extension"/>
-  <xsl:apply-templates select= "xs:annotation"/>
+  <xsl:call-template name="doAnnotation"/>
   {   <xsl:apply-templates select="xs:extension/*"/>
   }
 </xsl:template>
@@ -131,7 +131,7 @@ package <xsl:value-of select="concat(name,' ')"/> <xsl:apply-templates select= "
 
 <xsl:template match="xs:complexType">
   <xsl:value-of select="$nl"/><xsl:if test="@abstract">abstract </xsl:if>otype <xsl:value-of select="@name"/><xsl:text> </xsl:text>
-  <xsl:apply-templates select= "xs:annotation"/>
+  <xsl:call-template name="doAnnotation"/>
   {   <xsl:apply-templates select="* except xs:annotation"/>
   }
 </xsl:template>
@@ -164,16 +164,24 @@ enum <xsl:value-of select="concat(../@name, '_enum')"/><xsl:text> </xsl:text>
 <xsl:template match="xs:simpleType[@name and not( xs:restriction/xs:enumeration)]">
   <xsl:value-of select="$nl"/>primitive <xsl:value-of select="@name"/><xsl:text> </xsl:text>
   <xsl:apply-templates select="* except (xs:annotation)"/>
-  <xsl:apply-templates select= "xs:annotation"/>
+  <xsl:call-template name="doAnnotation"/>
 </xsl:template>
 
 
 
 <xsl:template match="xs:simpleType"><!-- does this ever match -->
   <xsl:value-of select="$nl"/><xsl:if test="@abstract">abstract </xsl:if>dtype <xsl:value-of select="@name"/><xsl:text> </xsl:text>
-  <xsl:apply-templates select= "xs:annotation"/>
+  <xsl:call-template name="doAnnotation"/>
   {   
   }
+</xsl:template>
+
+<xsl:template name="doAnnotation">
+<!-- deal with the annotation not being present -->
+     <xsl:choose>
+         <xsl:when test="xs:annotation"><xsl:apply-templates select="xs:annotation" /></xsl:when>
+         <xsl:otherwise><xsl:text> "" </xsl:text></xsl:otherwise>
+     </xsl:choose>
 </xsl:template>
 
 <xsl:template match ="xs:annotation">
