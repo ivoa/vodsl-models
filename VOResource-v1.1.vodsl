@@ -1,6 +1,6 @@
 
 model VOResource (1.1) 
-	   "VOResourcexsvr
+	   "
         An XML Schema describing a resource to be used in the Virtual 
         Observatory Project.
 
@@ -69,7 +69,7 @@ otype Resource  "
            describable and identifiable by an IVOA Identifier. 
          "
   {   
-        validationLevel: Validation  @*  as composition "
+        validationLevel: ResourceValidation  @*  as composition "
                   A numeric grade describing the quality of the
                   resource description, when applicable, 
                   to be used to indicate the confidence an end-user
@@ -199,7 +199,7 @@ e  "
 }
 
 
-otype Validation  "
+abstract otype Validation  "
          a validation stamp combining a validation level and the ID of 
          the validator.
        "
@@ -210,6 +210,10 @@ otype Validation  "
                assigned the validation level.  
              ";
   }
+otype ResourceValidation -> Validation "specific type for resource validation" 
+{}
+otype CapabilityValidation -> Validation "specific type for capability validation" 
+{}
 
 primitive AuthorityID  -> ivoa:string "" 
 primitive ResourceKey  -> ivoa:string "" 
@@ -501,7 +505,7 @@ otype Capability  "
             an interface)
          "
   {   
-        validationLevel: Validation  @* as composition  "
+        validationLevel: CapabilityValidation  @* as composition  "
                   A numeric grade describing the quality of the
                   capability description and interface, when applicable, 
                   to be used to indicate the confidence an end-user
