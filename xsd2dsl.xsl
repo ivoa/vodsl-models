@@ -106,9 +106,9 @@ model <xsl:value-of select="$modname"/> (<xsl:value-of select="@version"/>)
 
 <xsl:template match="xs:complexType[xs:complexContent]">
   <xsl:value-of select="$nl"/><xsl:if test="@abstract">abstract </xsl:if>otype <xsl:value-of select="@name"/><xsl:text> </xsl:text>
-  <xsl:apply-templates select= "xs:extension"/>
+  <xsl:apply-templates select= "xs:complexContent/xs:extension"/>
   <xsl:call-template name="doAnnotation"/>
-  {   <xsl:apply-templates select="xs:extension/*"/>
+  {   <xsl:apply-templates select="xs:complexContent/xs:extension/*"/>
   }
 </xsl:template>
 
