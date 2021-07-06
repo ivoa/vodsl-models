@@ -78,22 +78,6 @@ model <xsl:value-of select="$modname"/> (<xsl:value-of select="@version"/>)
    
  </xsl:template> 
   
-
-<xsl:template match="author">
-   <xsl:value-of select="concat($nl,' author ',$dq,.,$dq)"/>
-</xsl:template>
-
-<xsl:template match="identifier">
-   <xsl:value-of select="concat($nl,$lt,.,$gt)"/>
-</xsl:template>
-
-
-  <xsl:template match="package"> <!-- will not be any of these -->
-package <xsl:value-of select="concat(name,' ')"/> <xsl:apply-templates select= "description"/>
-{
-      <xsl:apply-templates select="* except (vodml-id|description|name)" />
-}
-  </xsl:template>
   
  
 <!-- remove the local namespace -->  
@@ -185,7 +169,7 @@ enum <xsl:value-of select="concat(../@name, '_enum')"/><xsl:text> </xsl:text>
 </xsl:template>
 
 <xsl:template match ="xs:annotation">
-  <xsl:text> "</xsl:text><xsl:if test="not(matches(text(),'^\s*TODO'))"><xsl:value-of select='translate(.,$dq,$sq)'/></xsl:if><xsl:text>"</xsl:text>
+  <xsl:text> "</xsl:text><xsl:if test="not(matches(text(),'^\s*TODO'))"><xsl:value-of select='translate(string-join(xs:documentation, " "),$dq,$sq)'/></xsl:if><xsl:text>"</xsl:text>
 </xsl:template>
 
 <xsl:template match="xs:element[@name]">
@@ -276,13 +260,6 @@ enum <xsl:value-of select="concat(../@name, '_enum')"/><xsl:text> </xsl:text>
 </xsl:template>
 
 
-<xsl:template match="semanticconcept">
-<xsl:text> semantic "</xsl:text><xsl:value-of select="topConcept"/><xsl:text>" in "</xsl:text><xsl:value-of select="vocabularyURI"/><xsl:text>"</xsl:text>
-</xsl:template>
-
-<xsl:template match="constraint[@xsi:type='vo-dml:SubsettedRole']"><!-- FIXME these apply to attributes...I think.... -->
-<xsl:text> subsets</xsl:text> 
-</xsl:template>
 
 
 
