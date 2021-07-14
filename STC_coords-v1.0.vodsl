@@ -58,6 +58,7 @@ dtype PhysicalCoordinate  -> Coordinate "The most common type of coordinate valu
 
 dtype Point  -> Coordinate "Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys).  The coordinate values map, in order, to the axes described by the associated CoordSpace.  Values for unused/undefined dimensions need not be provided."
   {   
+     subset coords:Coordinate.coordSys as coords:SpaceSys;
         axis1: ivoa:Quantity  @?   "Coordinate value along the first axis of the associated coordinate space, expressed as an ivoa:Quantity.";
         axis2: ivoa:Quantity  @?   "Coordinate value along the second axis of the associated coordinate space, expressed as an ivoa:Quantity.";
         axis3: ivoa:Quantity  @?   "Coordinate value along the third axis of the associated coordinate space, expressed as an ivoa:Quantity.";
@@ -66,6 +67,7 @@ dtype Point  -> Coordinate "Multi-dimensional spatial coordinate. The Point MUST
 abstract dtype TimeStamp  -> Coordinate "This is the abstract basis for a set of simple time domain coordinates which are expected to accommodate the vast majority of use cases. All TimeStamps, by definition, exist in a standard 1-D coordinate space, with domainMin|Max of +/-Infinity.  All TimeStamps MUST refer to an appropriate TimeSys.
 "
   {   
+     subset coords:Coordinate.coordSys as coords:TimeSys;
   }
 
 dtype TimeOffset  -> TimeStamp "Time is given as an offset from a specific point in time (time0)."
@@ -188,6 +190,7 @@ otype PixelCoordSystem  -> CoordSys "The PixelCoordSystem provides a complete de
 
 otype PixelSpace  -> CoordSpace "A PixelSpace SHALL include one or more BinnedAxis objects describing the pixel coordinate space.  A handedness value MAY be provided to specify the relative orientation of the axes.  "
   {   
+     subset coords:CoordSpace.axis as coords:BinnedAxis;
         handedness: Handedness  @?   "Specifies the handedness of the coordinate space.";
   }
 
@@ -203,14 +206,18 @@ abstract otype PhysicalCoordSys  -> CoordSys "Coordinate system description for 
 
 otype GenericSys  -> PhysicalCoordSys "Specialized coordinate system for generic, one-dimensional domains not covered by other, more concrete objects.  If a CoordSpace is not provided, it is assumed to be represented by a Standard 1-Dimensional Coordinate Space as described in Appendix B."
   {   
+     subset coords:PhysicalCoordSys.frame as coords:GenericFrame;
   }
 
 otype SpaceSys  -> PhysicalCoordSys "Specialized coordinate system for the Spatial domain.  This object SHOULD include an appropriate SpaceFrame.  In Appendix B, we define two standard spatial coordinate space instances (Spherical and Cartesian), which may be referenced in serializations.  If a CoordSpace is not provided, it is assumed to be represented by a Standard Spherical Coordinate Space."
   {   
+     subset coords:PhysicalCoordSys.frame as coords:SpaceFrame;
   }
 
 otype TimeSys  -> PhysicalCoordSys "Specialized coordinate system for the Temporal domain.  This object SHOULD include an appropriate TimeFrame.  If a CoordSpace is not provided, it is assumed to be represented by a Standard 1-Dimensional Coordinate Space as described in Appendix B."
   {   
+     subset coords:PhysicalCoordSys.frame as coords:TimeFrame;
+     subset coords:PhysicalCoordSys.coordSpace as coords:GenericCoordSpace;
   }
 
 abstract otype PhysicalCoordSpace  -> CoordSpace "Abstract head of coordinate spaces related to physical properties."
@@ -218,13 +225,15 @@ abstract otype PhysicalCoordSpace  -> CoordSpace "Abstract head of coordinate sp
   }
 
 otype GenericCoordSpace  -> PhysicalCoordSpace "Generic, one-dimensional coordinate space suitable for use with most non-spatial properties.  In Appendix B, we provide the description of a Standard 1D Coordinate Space instance which may be referenced in serializations."
-  {   
+  {   // constraint  axis[1]
   }
 
 otype SphericalCoordSpace  -> PhysicalCoordSpace "Spatial domain, three-dimensional spherical coordinate space.  The particulars of the axis descriptions depend on the flavor of space being instantiated.  In Appendix B., we provide a Standard Spherical Coordinate Space instance which applies to many Astronomical use cases.  It provides the default space for SpaceSys instances, and may be referenced in serializations."
-  {   
+  {   // constraint  axis[3]
+     subset coords:CoordSpace.axis as coords:ContinuousAxis;
   }
 
 otype CartesianCoordSpace  -> PhysicalCoordSpace "Spatial domain, three-dimensional cartesian coordinate space.  The particulars of the axis descriptions depend on the physical constraints of the instance.  In Appendix B, we provide the description of a Standard Cartesian Coordinate Space instance which applies to many Astronomical cases, and may be referenced in serializations."
-  {   
+  {   // constraint  axis[1..3]
+     subset coords:CoordSpace.axis as coords:ContinuousAxis;
   }

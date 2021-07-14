@@ -91,6 +91,7 @@ otype SkyCoordinateFrame  ""
 
 otype Source  -> catalog.AbstractSource ""
   {   
+  	subset AbstractSource.positionError as catalog.GenericEllipse;
   }
 
 otype TwoMassSource  -> catalog.AbstractSource ""

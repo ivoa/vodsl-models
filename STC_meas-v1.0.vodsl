@@ -106,7 +106,7 @@ otype Time  -> Measure "Provides a complete description of a measured Temporal i
   }
 
 otype Polarization  -> Measure "Provides a complete description of a determined polarization state.  Since the polarization coordinate is an enumerated type, there can be no associated numerical error sources."
-  {   
+  {   // constraint  error:Error[0]
         coord: coords:PolCoordinate   "Determined polarization state.  May be provided by any of the PolCoordValue subtypes.";
   }
 

@@ -28,7 +28,7 @@
         <todsl model="DatasetMetadata-1.0" sdir="DatasetMetadata/vo-dml/"/>
         <todsl model="STC_coords-v1.0" sdir="STC/Coords/vo-dml/"/>
         <todsl model="STC_meas-v1.0" sdir="STC/Meas/vo-dml/"/>
-        <todsl model="STC_trans-v1.0" sdir="STC/Trans/vo-dml/"/>
+        <todsl model="STC_trans-v1.0" sdir="STC/Trans/vo-dml/"/><!-- has moved to github -->
      	<todsl model="Cube-1.0" sdir="Cube/vo-dml/" />
         <todsl model="Provenance" sdir="provenance/ProvDM/vo-dml/"/>
 	
@@ -38,9 +38,8 @@
           target: fewdsl              
          ================================= -->
     <target name="fewdsl"  description="do a few transformations">
-    	<todsl model="SKA-MSv3-0.1" sdir="vo-dml/models/SKA-MSv3/vo-dml/"/>
-        <fromxsd model="VOResource-v1.1" />
-        <fromxsd model="VODataService-v1.2" />
+        <todsl model="STC_coords-v1.0" sdir="STC/Coords/vo-dml/"/>
+        <todsl model="STC_meas-v1.0" sdir="STC/Meas/vo-dml/"/>
  	
     </target>
 	

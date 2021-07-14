@@ -103,14 +103,14 @@ package <xsl:value-of select="concat(name,' ')"/> <xsl:apply-templates select= "
   <xsl:value-of select="$nl"/><xsl:if test="@abstract">abstract </xsl:if>otype <xsl:value-of select="name"/><xsl:text> </xsl:text>
   <xsl:apply-templates select= "extends"/>
   <xsl:apply-templates select= "description"/>
-  {   <xsl:apply-templates select="* except (vodml-id|description|name|extends|constraint)"/>
+  {   <xsl:apply-templates select="* except (vodml-id|description|name|extends)"/>
   }
 </xsl:template>
 <xsl:template match="dataType"><!-- is this really so different from object? -->
   <xsl:value-of select="$nl"/><xsl:if test="@abstract">abstract </xsl:if>dtype <xsl:value-of select="name"/><xsl:text> </xsl:text>
   <xsl:apply-templates select= "extends"/>
   <xsl:apply-templates select= "description"/>
-  {   <xsl:apply-templates select="* except (vodml-id|description|name|extends|constraint)"/>
+  {   <xsl:apply-templates select="* except (vodml-id|description|name|extends)"/>
   }
 </xsl:template>
 
@@ -125,7 +125,6 @@ package <xsl:value-of select="concat(name,' ')"/> <xsl:apply-templates select= "
   <xsl:apply-templates select="datatype/vodml-ref"/><xsl:text> </xsl:text> 
   <xsl:apply-templates select="multiplicity"/><xsl:text> </xsl:text> 
   <xsl:apply-templates select="description"/>
-  <xsl:apply-templates select="preceding-sibling::constraint[@xsi:type='vo-dml:SubsettedRole' and tokenize(role/vodml-ref,'\.')[last()] eq current()/name]"/>
   <xsl:apply-templates select="* except (description|datatype|name|vodml-id|multiplicity)"/>
   <xsl:text>;</xsl:text>
 </xsl:template>
@@ -205,12 +204,13 @@ enum <xsl:value-of select="name"/><xsl:text> </xsl:text>
 </xsl:template>
 
 <xsl:template match="constraint[@xsi:type='vo-dml:SubsettedRole']"><!-- FIXME these apply to attributes...I think.... -->
-<xsl:text> subsets</xsl:text> 
+<xsl:text>
+     subset </xsl:text> <xsl:value-of select="role/vodml-ref"/><xsl:text> as </xsl:text><xsl:value-of select="datatype/vodml-ref"/><xsl:text>;</xsl:text>
 </xsl:template>
 
 
-<xsl:template match="constraint"> 
-  <xsl:text>&lt;</xsl:text> <xsl:apply-templates select="* except attribute"/> <xsl:text>&gt;</xsl:text>
+<xsl:template match="constraint"> <!-- FIXME - need to work out where this goes for plain constraint -->
+  <xsl:text>// constraint  </xsl:text><xsl:value-of select="description"/> 
 </xsl:template>
 
 <!-- I think that these specialized constraints have disappeared now -->
