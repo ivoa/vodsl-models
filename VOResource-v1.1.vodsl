@@ -9,16 +9,8 @@ model VOResource (1.1)
         schema.
       "
       include "IVOA-v1.0.vodsl"
-   
-   
-abstract dtype baseURL "base for annotated URLs" {
-	url : ivoa:anyURI "the URL";
-} 
-abstract dtype baseString "base for annotated string" {
-	value : ivoa:string "the value";
-} 
      
-enum status_enum 
+enum Resource_status  "" 
 {
 active  "
                       resource is believed to be currently maintained, and its
@@ -33,7 +25,7 @@ deleted  "
 }
 
 
-enum use_enum 
+enum AccessURL_use  "" 
 {
 full  "
                      Assume a full URL--that is, one that can be invoked 
@@ -110,10 +102,10 @@ otype Resource  "
                   here, e.g., doi:10.1016/j.epsl.2011.11.037.  For bibcodes,
                   use a form like bibcode:2008ivoa.spec.0222P.
                ";
-        curation: Curation  as composition "
+        curation: Curation   as composition  "
                Information regarding the general curation of the resource
              ";
-        content: Content as composition  "
+        content: Content   as composition  "
                Information regarding the general content of the resource
              ";
         created: UTCTimestamp   "
@@ -133,7 +125,7 @@ otype Resource  "
               accurate to the day.  Any non-significant time fields
               should be set to zero. 
             ";
-        status: status_enum   "
+        status: Resource_status   "
               a tag indicating whether this resource is believed to be still
               actively maintained.
             ";
@@ -199,20 +191,18 @@ highest  "
 }
 
 
-abstract dtype Validation "
+dtype Validation  "
          a validation stamp combining a validation level and the ID of 
          the validator.
        "
   {   
-  	    level : ValidationLevel "the level";
+      value : ValidationLevel "";
+  
         validatedBy: ivoa:anyURI   "
                The IVOA ID of the registry or organisation that
                assigned the validation level.  
              ";
   }
-
-
-
 
 primitive AuthorityID  -> ivoa:string "" 
 primitive ResourceKey  -> ivoa:string "" 
@@ -248,7 +238,7 @@ otype Curation  "
                Entity (e.g. person or organisation) responsible for making the 
                resource available
              ";
-        creator: Creator  @* as composition  "
+        creator: Creator  @*   as composition  "
                 The entity/ies (e.g. person(s) or organisation) primarily responsible 
                 for creating the content or constitution of the resource.
               
@@ -270,17 +260,19 @@ otype Curation  "
                Label associated with creation or availablilty of a version of 
                a resource.
              ";
-        contact: Contact  @+  as composition "
+        contact: Contact  @+   as composition  "
                Information that can be used for contacting someone with
                regard to this resource.
              ";
   }
 
-dtype ResourceName  -> baseString "
+dtype ResourceName  "
          The name of a potentially registered resource.  That is, the entity
          referred to may have an associated identifier.
        "
   {   
+      value : ivoa:string "";
+  
         ivoid: IdentifierURI   "
                 The IVOA identifier for the resource referred to.
               ";
@@ -351,9 +343,10 @@ otype Creator  "
            ";
   }
 
-dtype Date "" 
+dtype Date  "" 
   {   
-        date: ivoa:datetime "the date";
+      value : UTCDateTime "";
+  
         role: ivoa:string   "
                  A string indicating what the date refers to.  
                 
@@ -425,13 +418,15 @@ otype Content  "
                 vocabulary
                 http://www.ivoa.net/rdf/voresource/content_level.
              ";
-        relationship: Relationship  @*  as composition "
+        relationship: Relationship  @*   as composition  "
                a description of a relationship to another resource.  
              ";
   }
 
-dtype Source  -> baseString "" 
+dtype Source  "" 
   {   
+      value : ivoa:string "";
+  
         format: ivoa:string   "
                  The reference format.  Recognized values include “bibcode”, 
                  referring to a standard astronomical bibcode 
@@ -494,7 +489,7 @@ otype Service  -> Resource "
                        typically only display and/or use the rights
                        element occurring first and ignore later elements.
                      ";
-        capability: Capability  @* as composition   "
+        capability: Capability  @*   as composition  "
                         a description of a general capability of the
                         service and how to use it.
                       
@@ -509,7 +504,7 @@ otype Service  -> Resource "
                      ";
   }
 
-dtype Rights  -> baseString "
+dtype Rights  "
             A statement of usage conditions.  This will typically
             include a license,
             which should be given as a full string (e.g., Creative Commons
@@ -517,6 +512,8 @@ dtype Rights  -> baseString "
             e.g., on how to attribute or on embargo periods is allowed.
          "
   {   
+      value : ivoa:string "";
+  
         rightsURI: ivoa:anyURI   "
                      A URI identifier for a license
                    
@@ -551,7 +548,7 @@ otype Capability  "
                   this capability is non-standard and is one of several 
                   capabilities listed.
                ";
-        interface: Interface  @*  as composition "
+        interface: Interface  @*   as composition  "
                   a description of how to call the service to access
                   this capability
                 
@@ -617,7 +614,7 @@ abstract otype Interface  "
                 publisher.  Other arrangements should be represented as
                 separate services linked by mirror-of relationships.
                ";
-        securityMethod: SecurityMethod  @?  as composition "
+        securityMethod: SecurityMethod  @?   as composition  "
                   The mechanism the client must employ to authenticate
                   to the service.
                 
@@ -660,9 +657,11 @@ abstract otype Interface  "
             ";
   }
 
-dtype AccessURL  -> baseURL "" 
+dtype AccessURL  "" 
   {   
-        use: use_enum   "
+      value : ivoa:anyURI "";
+  
+        use: AccessURL_use   "
                A flag indicating whether this should be interpreted as a base
                URL, a full URL, or a URL to a directory that will produce a 
                listing of files.
@@ -672,11 +671,13 @@ dtype AccessURL  -> baseURL ""
              ";
   }
 
-dtype MirrorURL  -> baseURL "
+dtype MirrorURL  "
             A URL of a mirror (i.e., a functionally identical additional 
             service interface) to 
          "
   {   
+      value : ivoa:anyURI "";
+  
         title: ivoa:string   "
                   A terse, human-readable phrase indicating the function
                   or location of this mirror, e.g., “Primary Backup” or

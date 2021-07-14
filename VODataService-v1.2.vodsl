@@ -6,9 +6,57 @@ model VODataService (1.2)
       "
       include "IVOA-v1.0.vodsl"
      
-     include "VOResource-v1.1.vodsl"
+       include "VOResource-v1.1.vodsl"
      
      
+enum SimpleDataType_enum  "" 
+{
+integer  "" ,
+real  "" ,
+complex  "" ,
+boolean  "" ,
+char  "" ,
+string  "" 
+}
+
+
+enum VOTableType_enum  "" 
+{
+boolean  "" ,
+bit  "" ,
+unsignedByte  "" ,
+short  "" ,
+int  "" ,
+long  "" ,
+char  "" ,
+unicodeChar  "" ,
+float  "" ,
+double  "" ,
+floatComplex  "" ,
+doubleComplex  "" 
+}
+
+
+enum TAPType_enum  "" 
+{
+BOOLEAN  "" ,
+SMALLINT  "" ,
+INTEGER  "" ,
+BIGINT  "" ,
+REAL  "" ,
+DOUBLE  "" ,
+TIMESTAMP  "" ,
+CHAR  "" ,
+VARCHAR  "" ,
+BINARY  "" ,
+VARBINARY  "" ,
+POINT  "" ,
+REGION  "" ,
+CLOB  "" ,
+BLOB  "" 
+}
+
+
 otype DataCollection  -> VOResource:Resource "
            A logical grouping of data which, in general, is composed of one 
            or more accessible datasets.  A collection can contain any
@@ -45,11 +93,11 @@ otype DataCollection  -> VOResource:Resource "
                       Non-RFC 2046 values could be used for media that cannot
                       be retrieved over the network.
                     ";
-        coverage: Coverage  @? as composition  "
+        coverage: Coverage  @?   as composition  "
                      Extent of the content of the resource over space, time, 
                      and frequency.
                    ";
-        tableset: TableSet  @? as composition  "
+        tableset: TableSet  @?   as composition  "
                      A description of the tables that are part of this
                      collection. 
                     
@@ -62,12 +110,14 @@ otype DataCollection  -> VOResource:Resource "
                    ";
   }
 
-dtype SpatialCoverage  -> VOResource:baseString "
+dtype SpatialCoverage  "
             A coverage on a sphere.  By default, this refers to the
             celestial sphere in the ICRS frame.  Non-celestial frames
             are indicated by non-NULL values of the frame attribute.
-         " // IMPL better to just have a string member than derive from baseString - more obvious what the value means....
+         "
   {   
+      value : ivoa:string "";
+  
         frame: ivoa:string   "
                      When present, the MOC is written in a non-celestial (e.g., 
                      planetary) frame.  Note that for celestial coverages,
@@ -161,19 +211,21 @@ otype Coverage  "
                ";
   }
 
-dtype ServiceReference  -> VOResource:baseURL "
+dtype ServiceReference  "
            The service URL for a potentially registerd service.  That is,
            if an IVOA identifier is also provided, then the service is 
            described in a registry.
          "
   {   
+      value : ivoa:anyURI "";
+  
         ivoid: VOResource:IdentifierURI   "
                    The URI form of the IVOA identifier for the service 
                    describing the capability refered to by this element.
                  ";
   }
 
-enum Waveband 
+enum Waveband  "" 
 {
 Radio  "
                  wavelength >= 10 mm; frequency <= 30 GHz.
@@ -194,7 +246,7 @@ UV  "
 EUV  "
                  12 eV <= energy <= 120 eV
                ",
-XRay  "
+Xray  "
                  0.12 keV <= energy <= 120 keV
                ",
 GammaRay  "
@@ -207,7 +259,7 @@ otype TableSet  "
            The set of tables hosted by a resource.
          "
   {   
-        schema: TableSchema  @+  as composition "
+        schema: TableSchema  @+   as composition  "
                 A named description of a group of logically related tables.
                
                 The name given by the “name” child element must
@@ -262,14 +314,15 @@ otype TableSchema  "
                   model; common forms are sequences of dotted identifiers
                   (e.g., in SSA) or URIs (e.g., in RegTAP).
                ";
-        table: Table  @* as composition  "
+        table: Table  @*   as composition  "
                A description of one table.
              ";
   }
 
 dtype Format  "" 
   {   
-  	    format : ivoa:string "" ; 
+      value : ivoa:string "";
+  
         isMIMEType: ivoa:boolean   "
                  If true, the content of the element is an RFC 
                  2046-compliant media time.
@@ -292,7 +345,7 @@ otype DataResource  -> VOResource:Service "
                      The instrument used to collect the data contain or 
                      managed by a resource.  
                    ";
-        coverage: Coverage  @? as composition  "
+        coverage: Coverage  @?   as composition  "
                      Extent of the content of the resource over space, time, 
                      and frequency.
                    ";
@@ -317,8 +370,7 @@ otype ParamHTTP  -> VOResource:Interface "
            the service/referenceURL element.
         "
   {   
-        queryType: HTTPQueryType @[2..2] //this was [0..2] current vodsl validation marks that as error
-         "
+        queryType: HTTPQueryType @[0..2]  "
                        The type of HTTP request, either GET or POST.
                       
                        The service may indicate support for both GET
@@ -333,7 +385,7 @@ otype ParamHTTP  -> VOResource:Interface "
                        The MIME media type of a document returned in 
                        the HTTP response.
                      ";
-        param: InputParam  @* as composition  "
+        param: InputParam  @*   as composition  "
                        A description of a input parameter that can be 
                        provided as a name=value argument to the service.  
                     ";
@@ -354,8 +406,8 @@ enum HTTPQueryType  "
            The type of HTTP request, either GET or POST.
          "
 {
-GET ,
-POST 
+GET  "" ,
+POST  "" 
 }
 
 
@@ -368,7 +420,7 @@ otype CatalogResource  -> DataResource "
             in a sufficiently structured form (e.g., Obscore, SSAP, etc).
          "
   {   
-        tableset: TableSet  @? as composition  "
+        tableset: TableSet  @?   as composition  "
                        A description of the tables that are accessible
                        through this service.
                       
@@ -425,10 +477,10 @@ otype Table  ""
                   estimates on table sizes databases keep for query
                   planning purposes are suitable for this field.
                ";
-        column: TableParam  @*  as composition  "
+        column: TableParam  @*   as composition  "
                   A description of a table column.
                ";
-        foreignKey: ForeignKey  @* as composition  "
+        foreignKey: ForeignKey  @*   as composition  "
                   A description of a foreign keys, one or more columns
                   from the current table that can be used to join with 
                   another table.  
@@ -535,7 +587,7 @@ otype InputParam  -> BaseParam "
                   ";
   }
 
-enum ParamUse 
+enum ParamUse  "" 
 {
 required  "
                   The parameter is required for the application or
@@ -552,7 +604,7 @@ ignored  "
 }
 
 
-dtype DataType   "
+dtype DataType  "
             A type (in the computer language sense) associated with a 
             parameter with an arbitrary name
           
@@ -560,7 +612,8 @@ dtype DataType   "
             with a restricted set of names.
          "
   {   
-  	    type : ivoa:string "";
+      value : ivoa:string "";
+  
         arraysize: ArrayShape   "
                      The shape of the array that constitutes the value.
                    
@@ -617,7 +670,7 @@ primitive ArrayShape  -> ivoa:string "
             that the length of the last axis is variable or
             undetermined. 
          "
-dtype SimpleDataType  "
+dtype SimpleDataType  -> DataType "
             A data type restricted to a small set of names which is 
             imprecise as to the format of the individual values.
           
@@ -625,26 +678,40 @@ dtype SimpleDataType  "
             a service or function.
          "
   {   
+    val: SimpleDataType_enum "";
+        arraysize: ArrayShape   "See vs:DataType.";
+        delim: ivoa:string   "See vs:DataType.";
+        extendedType: ivoa:string   "See vs:DataType.";
+        extendedSchema: ivoa:anyURI   "See vs:DataType.";
   }
 
-abstract dtype TableDataType  -> DataType "
+abstract dtype TableDataType  "
             An abstract parent for a class of data types that can be
             used to specify the data type of a table column.
          "
   {   
+      value : DataType "";
+  
   }
 
-dtype VOTableType  "
+dtype VOTableType  -> TableDataType "
             A data type supported explicitly by the VOTable format
          "
   {   
+    val: VOTableType_enum "";
+        arraysize: ArrayShape   "See vs:DataType.";
+        delim: ivoa:string   "See vs:DataType.";
+        extendedType: ivoa:string   "See vs:DataType.";
+        extendedSchema: ivoa:anyURI   "See vs:DataType.";
   }
 
-abstract dtype TAPDataType  -> TableDataType "
+abstract dtype TAPDataType  "
             An abstract parent for the specific data types supported 
             by the Table Access Protocol.
          "
   {   
+      value : TableDataType "";
+  
         size: ivoa:integer   "
                     The length of the fixed-length value
                   
@@ -654,13 +721,19 @@ abstract dtype TAPDataType  -> TableDataType "
                  ";
   }
 
-dtype TAPType  "
+dtype TAPType  -> TAPDataType "
             A data type supported explicitly by the Table Access 
             Protocol (v1.0).  This is deprecated in VODataService 1.2,
             and even TAP 1.0 services are encouraged to declare
             their columns using VOTableType.
          "
   {   
+    val: TAPType_enum "";
+        arraysize: ArrayShape   "" ;
+        delim: ivoa:string   "" ;
+        extendedType: ivoa:string   "" ;
+        extendedSchema: ivoa:anyURI   "" ;
+        size: ivoa:integer   "" ;
   }
 
 
@@ -678,7 +751,7 @@ otype ForeignKey  "
                applicable) of the table that can be joined with the 
                table containing this foreign key.
              ";
-        fkColumn: FKColumn  @+ as composition  "
+        fkColumn: FKColumn  @+   as composition  "
                A pair of column names, one from this table and one
                from the target table that should be used to join the
                tables in a query.  
