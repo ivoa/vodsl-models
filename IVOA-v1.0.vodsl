@@ -1,5 +1,5 @@
 
-model ivoa (1.0) "This is the main reference data model containing primitive types used in other data models."
+model ivoa (1.1) "This is the main reference data model containing primitive types used in other data models."
      
     primitive Unit  "Must conform to definition of unit in VOUnit spec."
     primitive anyURI  "Represents a URI in the same way as the datatype of the same nam in XML Schema is used."
@@ -38,3 +38,9 @@ dtype rational  "A rational number from Q, represented by two integers, a numera
         numerator: integer   "The numerator of the quotient defining the rational.";
         denominator: nonnegativeInteger   "The denominator of the rational. Must be greater than 0.";
   }
+
+  
+  abstract primitive identifier "something that an identifier that can be used as a key for lookup of an entity that is *outside this datamodel*"
+  primitive intIdentifier -> identifier "an integer identifier"
+  primitive stringIdentifier -> identifier "a string identifier"
+  primitive ivorn -> identifier "an identifier that can be used as a key to look up in an IVOA registry - see https://www.ivoa.net/documents/IVOAIdentifiers/"
