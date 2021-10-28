@@ -1,4 +1,4 @@
-model example (0.1) "an example model" <"String"> author "Paul Harrison"
+model example (0.1) "an example model"  author "Paul Harrison"
 author "another"
 
 include "IVOA-v1.0.vodsl"
@@ -31,7 +31,8 @@ package apackage "example package"
 			d : ivoa:anyURI "" ;
 		}
 		
-		otype another {
+		otype another { 
+			name: ivoa:string iskey "a natural key ";
 			f1 : apackage.fq @[6] "an array";
 			f2 : nestedpackage.another as composition "";
 		}
@@ -55,9 +56,12 @@ package apackage "example package"
 				ssi: ivoa:boolean "" ;
 			}
 		}
-		
-		otype derived2 -> derived  "Description"   {
+// subsetting 		
+		otype derived2 -> derived  "Description"   { 
 			subset derived:sv as myQuant ;
 		}
-		
+// constraint
+		otype constrained {
+			val : ivoa:integer "just using a natural language constraint" < "greater than 5" as Natural> ;
+		}
 }
