@@ -1,0 +1,389 @@
+
+model mango (1.0) "Data model based oon components and data association for source data"
+     
+ author "Laurent Michel, François Bonnarel, Gilles Landais, Mireille Louys, Marco Molinaro, Jesue Salgado"
+       include "IVOA-v1.0.vodsl"
+     
+       include "STC_meas-v1.0.vodsl"
+     
+       include "STC_coords-v1.0.vodsl"
+     
+enum LinkSemantic  "Literal enumeration of the possible values for the associated data semantic.
+This stands for an example before we have defined a vocabulary."
+{
+VOService  "Data returned by a VO service",
+VOInstance  "Data Serialized in a VO model",
+Preview  "data preview",
+DownloadLink  "Data download link",
+Detection  "Particular detection",
+Compagnon  "Compagnon source",
+Counterpart  "Counter part source"
+}
+
+enum ParamSemantic  "Literal enumeration of the possible values for the parameter semantic.
+This stands for an example before we have defined a vocabulary."
+{
+Main  "Main measurment",
+Computed  "Computed measurement",
+Native  "Mative measurement",
+Raw  "raw measure",
+Corrected  "Corrected measure"
+}
+
+enum ShapeFrame  " Possible options to encode a shape in a string.
+"
+{
+STC_S  "STCs serialisation
+",
+MOC  "MOC serialisation"
+}
+
+dtype VocabularyTerm  "Datatype  for vocabulary word. Provides a pointer to the word description and a label."
+  {   
+        uri: ivoa:string   "URI extracted from the DRF document and referring to the word
+
+";
+        label: ivoa:string   "RDF label. Matched the URL fragment for IVOA vocabularies
+
+";
+  }
+
+otype Source  "Root class of the model. MANGO instance are meant of be Source instances.
+A source has an identifier and two docks: one for the parameters and one for the associated data."
+  {   
+        identifier: ivoa:string   "Unique identifier for a Source.
+The uniqueness of that identifier is not managed by the model.
+The format is free.";
+        associatedDataDock : AssociatedData @*  as composition "Composition link pointing on all data associated with the source.";
+        parameterDock : Parameter @*  as composition "Composition link pointing on all parameters attached to the source.";
+  }
+
+abstract otype AssociatedData  "Abstract reference to a particular dataset associated to the Source.
+This class is used to specify the type of the dataset as well as its role."
+  {   
+        ^semantic: VocabularyTerm   "Reference to a semantic concept giving the nature of the associated data.
+As long as the vocabulary is not set, the possible values of this attribute are given by the LinkSemantic enumeration. ";
+        dataType: ivoa:string   "Type of the associated data (not defined yet)";
+        description: ivoa:string   "Free text description of the associated data";
+  }
+
+otype WebEndpoint  -> AssociatedData "Class for associated data referenced by an URL"
+  {   
+        ContentType: ivoa:string   "Mime type of the URL
+";
+        url: ivoa:anyURI   "Web endpoint";
+  }
+
+otype VOService  -> WebEndpoint "Class for associated data referenced by a fixed URL that is a VO service."
+  {   
+        ivoid: ivoa:string   "IVOA id of the service (for example in the registry)";
+  }
+
+otype VOModelInstance  -> AssociatedData "Reference to a VO model instance that is part of the associated data."
+  {   
+        ivoid: ivoa:string   "VO-DML id of the referenced model
+";
+        modelUrl: ivoa:anyURI   "URL on the VO-DML model";
+        modelName: ivoa:string   "Name of the referenced model";
+        modelDoc: ivoa:anyURI   "Documentation URL of the model";
+        modelInstance : ModelInstance as composition "Composition link pointing on one VO instance instance associated with the source.";
+  }
+
+otype ModelInstance  "Placeholder for the mapping of the model instance
+ "
+  {   
+  }
+
+otype AssociatedMangoInstance  -> AssociatedData "Reference to another MANGO instance that is part of the associated data."
+  {   
+        mangoInstance : Source as composition "Composition link pointing on one MANGO instance associated with the source.";
+  }
+
+otype Parameter  "Reference to a particular measure of the Source.
+This class is used to specify the type of the measure as well as its role."
+  {   // constraint  One association at the time
+
+        ^semantic: VocabularyTerm   "Reference to a semantic concept giving the nature of the parameter
+As long as the vocabulary is not set, the possible values of this attribute are given by the ParamSemantic enumeration. ";
+        ucd: ivoa:string   "UCD1+ giving the type of the physical measure";
+        description: ivoa:string   "Free text description of the measure
+";
+        measure : meas:Measure as composition "Composition link pointing to the meas:Measure instance";
+        associatedParameters  @*  references Parameter "This association allows to gather different parameters without explicit semantic.
+It can be used to attach a quality flags to a parameter. It can be used to put together the parameters whose errors are coupled together. Another case could be to associate a planet description with its orbital parameters. 
+Using associatedParameters allow to limit the number of  complex classes to be implemented in the model.";
+  }
+
+package exterrors  "This package contains all \texttt{meas:Error} class extensions
+"
+{
+      
+    primitive DiagElems2x2  "Datatype containing the 2 diagonal elements of a 2x2 matrix. 
+Attributes are named $\\sigma$ because this datatype is mostly used in the context of complex errors."
+abstract otype MultiParamError  -> meas:Error "This class models errors with possible correlations between different axes  and with errors of associated parameters.
+The standard use-case for such errors is a positional error where e.g. errors on position, proper motion and parallax are correlated to each other."
+  {   
+        confidenceLevel: ivoa:integer   "Error confidence level, expressed in $\\sigma$.";
+        unit: ivoa:Unit   "Unit of the variance or the error ellipse
+";
+        correlatedErrors : exterrors.CorrelatedError @*  as composition "Relation linking the host parameter error with all correlated errors.";
+  }
+
+otype CorrelatedError  "Correlation coefficients between the error of the host parameter and one of its associated parameters.
+The host parameter is one of the \texttt{mango:Parameter} of the \texttt{mango:ParameterDock} (a position typically) of the Mango object.
+The associated parameter is one of the \texttt{mango:Parameter.associatedParameters} of that parameter (typically a proper motion)
+There is no logical link between the correlated error instance and the associated parameter it refers to.
+The associated parameter is identified by the \texttt{UCD field}. The client is in charge of solving this dependency.
+"
+  {   
+        ucd: ivoa:string   "UCD of the associated parameter.
+This UCD must be identical to this of the associated parameter the \texttt{CorrelatedError} refers to.
+";
+  }
+
+otype CorrelatedError1D1D  -> exterrors.CorrelatedError "Correlation coefficients between the error of one 1D host parameter and a one 1D associated parameters.
+"
+  {   
+        correlation1_1: ivoa:real   "Correlation between the error on the first axis of the host parameter and the error on the first axis of the associated parameter.
+The covariance is given by $cov_{XY}=corr_{XY}\sigma_{X}\sigma_{Y}$";
+  }
+
+otype Ellipse  -> exterrors.MultParamErro2D "Elliptical error. The regular ellipse orientation is  East of the North
+"
+  {   
+        semiMajorAxis: ivoa:real   "Semi major axis of the ellipse. The unit is given by \texttt{mango:errors.MultiParamError.unit}";
+        semiMinorAxis: ivoa:real   "Semi minor axis of the ellipse. The unit is given by \texttt{mango:errors.MultiParamError.unit}";
+        positionAngle: ivoa:RealQuantity   "Ellipse orientation, relative to the East of the North.";
+  }
+
+otype CorrMatrix2x2  -> exterrors.MultParamErro2D "Variance matrix with correlation between errors on individual axes."
+  {   
+        correlation: ivoa:real   "Correlation between the errors on the 2 axes.
+The covariance is given by $cov_{XY}=corr_{XY}\sigma_{X}\sigma_{Y}$
+";
+        diagMatrix: exterrors.DiagElems2x2   "Diagonal elements of the matrix. The unit is given by \texttt{mango:error.MultiParamError.unit}
+";
+  }
+
+otype DiagMatrix2x2  -> exterrors.MultParamErro2D "Simple diagonal matrix of variances"
+  {   
+        diagMatrix: exterrors.DiagElems2x2   "Diagonal elements of the matrix. The unit is given by \texttt{mango:errors.MultiParamError.unit}";
+  }
+
+otype MultiParamError1D  -> exterrors.MultiParamError "This class models errors on a one axis parameter with possible correlations with errors on associated parameters.
+A classical use-case  is an error on a radial velocity that is coupled with an error on the proper motion."
+  {   
+     subset mango:exterrors.MultiParamError.correlatedErrors as  mango:exterrors.CorrelatedError1D1D;
+        sigma: ivoa:real   "Variance of the parameter error. The unit is given by \texttt{mango:errors.MultiParamError.unit}";
+  }
+
+otype Correlated2D1D  -> exterrors.CorrelatedError1D1D "Correlation coefficients between the error of a 1D host parameter and a 2D associated parameters.
+"
+  {   
+        correlation2_1: ivoa:real   "Correlation between the error on the first axis of the host parameter and the error on the second axis of the associated parameter.
+The covariance is given by $cov_{XY}=corr_{XY}\sigma_{X}\sigma_{Y}$
+";
+  }
+
+otype CorrelatedError1D2D  -> exterrors.CorrelatedError "Correlation coefficients between the error of one 2D host parameter and one 1D associated parameters.
+"
+  {   
+        correlation1_1: ivoa:real   "Correlation between the error on the first axis of the host parameter and the error on the associated parameter.
+The covariance is given by $cov_{XY}=corr_{XY}\sigma_{X}\sigma_{Y}$";
+        correlation1_2: ivoa:real   "Correlation between the error on the second axis of the host parameter and the error on the associated parameter.
+The covariance is given by $cov_{XY}=corr_{XY}\sigma_{X}\sigma_{Y}$";
+  }
+
+otype CorrelatedError2D2D  -> exterrors.CorrelatedError1D2D "Correlation coefficients between the error of a 2D host parameter and a 2D associated parameters.
+"
+  {   
+        correlation2_1: ivoa:real   "Correlation between the error on the first axis of the host parameter and the error on the second axis of the associated parameter.
+The covariance is given by $cov_{XY}=corr_{XY}\sigma_{X}\sigma_{Y}$";
+        correlation2_2: ivoa:real   "Correlation between the error on the second axis of the host parameter and the error on the second axis of the associated parameter.
+The covariance is given by $cov_{XY}=corr_{XY}\sigma_{X}\sigma_{Y}$";
+  }
+
+abstract otype MultParamErro2D  -> exterrors.MultiParamError "This class models errors on a one 2 axes parameter with possible correlations with errors on associated parameters.
+A classical use-case  is an error on a position that is coupled with errors on the proper motion and/or the parralax."
+  {   
+     subset mango:exterrors.MultiParamError.correlatedErrors as  mango:exterrors.CorrelatedError1D2D;
+  }
+
+}
+  
+package extmeas  "This package contains all \texttt{meas} class extensions
+"
+{
+      
+otype HardnessRatio  -> meas:Measure "Hardness ratio of Energy bands (e.g.1 and 2)
+$HR_{12} = (Flux_2 -  Flux_1)/ (Flux_2 +  Flux_1)&
+The hardness ration value is a real
+The coordinate frame is the descrition of the both bands."
+  {   
+        coord: extcoords.HardnessRatioCoord   "";
+  }
+
+otype LonLatSkyPosition  -> meas:Measure "Measure to used for sky points expressed with a spherical coordinate system"
+  {   
+        coord: extcoords.LonLatPoint   "Coordinate of spherical sky position";
+  }
+
+otype Photometry  -> meas:Measure "Measure for source luminosity, can be used for magnitude or fluxes either."
+  {   
+        coord: extcoords.PhotometryCoord   "Coordinate of the photometric measure";
+  }
+
+otype Redshift  -> meas:Measure ""
+  {   
+        coord: extcoords.RedshiftCoord   "";
+  }
+
+otype Flag  -> meas:Measure "Measure to be used for status parameters"
+  {   
+        coord: extcoords.FlagCoord   "Coordinate holding the status value";
+  }
+
+otype Orbit  -> meas:Measure ""
+  {   
+        coord: extcoords.OrbitCoord   "";
+  }
+
+otype Shape  -> meas:Measure "Measure giving the shape of a source. The shape is a string with a specific frame (STS_S or MOC)"
+  {   
+        coord: extcoords.ShapeCoord   "String serialization of the source shape";
+  }
+
+otype GenericStringMeasure  -> meas:Measure "Generic measure which value is a string. This can be typically used for identifiers or classification values."
+  {   
+        coord: extcoords.StringCoordinate   "";
+  }
+
+otype VocabGenericMeasure  -> meas:Measure "Generic measure which value is a vocabulary entry. This can be typically used for object types."
+  {   
+        coord: extcoords.VocabCoordinate   "";
+  }
+
+}
+  
+package extcoords  "This package contains all \texttt{coords} class extensions
+"
+{
+      
+    primitive VocabCoordinate  "Coordinate  for \texttt{mango:measures.GenericVocabMeasure} 
+"
+enum ShapeFrame  "Enumeration of the possible options to encode a shape in  a string."
+{
+MOC  "MOC serialization",
+STCs  "STCs serialization"
+}
+
+dtype RedshiftCoord  -> coords:Coordinate ""
+  {   
+     subset coords:Coordinate.coordSys as  mango:extcoords.RedshiftSys;
+        redshift: ivoa:real   "";
+  }
+
+dtype HardnessRatioCoord  -> coords:Coordinate "The hardness ration value with a reference to coordinate frame which is the descrition of the both bands."
+  {   
+     subset coords:Coordinate.coordSys as  mango:extcoords.HardnessRatioSys;
+        hardnessRatio: ivoa:real   "Hardness ration value";
+  }
+
+dtype PhotometryCoord  -> coords:Coordinate "Coordinate value for photometry measures"
+  {   
+     subset coords:Coordinate.coordSys as  mango:extcoords.PhotometryCoordSys;
+        luminosity: ivoa:real   "Value of the photometric measure";
+  }
+
+dtype OrbitCoord  -> coords:Coordinate ""
+  {   
+     subset coords:Coordinate.coordSys as coords:SpaceSys;
+        period: ivoa:RealQuantity   "";
+        eccentricity: ivoa:real   "Orbital eccentricity, unitless
+";
+  }
+
+dtype ShapeCoord  -> coords:Coordinate ""
+  {   
+     subset coords:Coordinate.coordSys as  mango:extcoords.ShapeSys;
+        shape: ivoa:string   "String serialisation of the shape";
+  }
+
+dtype FlagState  "Possible value of a status"
+  {   
+        value: ivoa:integer   "Status value";
+        label: ivoa:string   "Label attached to that status value
+
+";
+  }
+
+dtype FlagCoord  -> coords:Coordinate "Coordinate of a status Measure"
+  {   
+     subset coords:Coordinate.coordSys as  mango:extcoords.FlagSys;
+        status: ivoa:integer   "Value of the status";
+  }
+
+dtype LonLatPoint  -> coords:Coordinate "Coordinate of a point on the sky sphere expressed in spherical coordinates."
+  {   
+     subset coords:Coordinate.coordSys as  mango:extcoords.LonLatCoordSys;
+        longitude: ivoa:real   "longitude of the point
+";
+        latitude: ivoa:real   "Latitude of the point";
+  }
+
+dtype StringCoordinate  -> coords:Coordinate "Coordinate value for \texttt{mango:measures.GenericStringMeasure}"
+  {   
+        cval: ivoa:string   "";
+  }
+
+otype PhotometryCoordSys  -> coords:PhysicalCoordSys "TBC with photDM"
+  {   
+     subset coords:PhysicalCoordSys.frame as  mango:extcoords.PhotFilter;
+  }
+
+otype HardnessRatioFrame  -> coords:CoordFrame "Hardness ratio frame.
+Defined by 2 energy bands Eheigh ELow.
+HR = (Eheigh - Elow)/(Eheigh + Elow)
+Energy bands are deemed to special photometric filters"
+  {   
+        low  references extcoords.PhotFilter "Low energy band";
+        high  references extcoords.PhotFilter "Heigh energy band";
+  }
+
+otype FlagSys  -> coords:CoordSys "Coordinate system to be used for statur measures."
+  {   
+        statusLabels : extcoords:FlagState @*  as composition "Composition link to all possible status values for this system";
+  }
+
+otype ShapeSys  -> coords:CoordSys "Coordinate systen to be used for shape measure"
+  {   
+        frame: extcoords.ShapeFrame   "Frame of the shape measure. Gives a enumeration of the supported serialisations.";
+  }
+
+otype PhotFilter  -> coords:CoordFrame "Photometric filter description, compliant with photDM"
+  {   
+        name: ivoa:string   "Filter name";
+        zeroPointFlux: ivoa:real   "Zero point flux of the filter";
+        magnitudeSystem: ivoa:string   "Magnitude system used by the filter";
+        effectiveWavelength: ivoa:real   "Effective wavelength of the filter";
+        unit: ivoa:Unit   "Wavelength unit used for that filter";
+        bandWidth: ivoa:real   "Band width of the filter";
+  }
+
+otype RedshiftSys  -> coords:PhysicalCoordSys ""
+  {   
+  }
+
+otype LonLatCoordSys  -> coords:PhysicalCoordSys "Space coordinate system"
+  {   // constraint  coordSpace[0]
+     subset coords:PhysicalCoordSys.frame as coords:SpaceFrame;
+  }
+
+otype HardnessRatioSys  -> coords:PhysicalCoordSys "Coordinate system for hardness ration. 
+This is basically the definition of the 2 bands used to compute the ratio."
+  {   
+     subset coords:PhysicalCoordSys.frame as  mango:extcoords.HardnessRatioFrame;
+  }
+
+}
+  
