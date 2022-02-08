@@ -10,7 +10,7 @@
       <author>Paul Harrison</author>
       <author>another</author>
       <version>0.1</version>
-      <lastModified>2019-05-28T13:22:52Z</lastModified>
+      <lastModified>2021-10-28T09:27:15Z</lastModified>
       <import>
         <name>null</name><!--should not be needed in modern vo-dml -->
         <url>IVOA-v1.0.vo-dml.xml</url>
@@ -156,6 +156,21 @@
                            <name>another</name>
                            <description></description>	    
                            <attribute>
+                             <vodml-id>apackage.another.name</vodml-id>
+                             <name>name</name>
+                             <description>a natural key </description>	    
+                             <datatype>
+                                <vodml-ref>ivoa:string</vodml-ref>
+                             </datatype>
+                             <multiplicity>
+                               <minOccurs>1</minOccurs>
+                               <maxOccurs>1</maxOccurs>
+                             </multiplicity>
+                             <constraint xsi:type="vo-dml:NaturalKey">
+                             	<position>1</position>
+                             </constraint>
+                           </attribute>
+                           <attribute>
                              <vodml-id>apackage.another.f1</vodml-id>
                              <name>f1</name>
                              <description>an array</description>	    
@@ -195,6 +210,23 @@
                                  <vodml-ref>example:apackage.myQuant</vodml-ref>
                               </datatype>
                            </constraint>
+                        </objectType>
+                        <objectType>
+                           <vodml-id>apackage.constrained</vodml-id>
+                           <name>constrained</name>
+                           <description></description>	    
+                           <attribute>
+                             <vodml-id>apackage.constrained.val</vodml-id>
+                             <name>val</name>
+                             <description>just using a natural language constraint</description>	    
+                             <datatype>
+                                <vodml-ref>ivoa:integer</vodml-ref>
+                             </datatype>
+                             <multiplicity>
+                               <minOccurs>1</minOccurs>
+                               <maxOccurs>1</maxOccurs>
+                             </multiplicity>
+                           </attribute>
                         </objectType>
                         <package>
                            <vodml-id>apackage.nestedpackage</vodml-id>

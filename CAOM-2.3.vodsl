@@ -200,7 +200,7 @@ otype Plane  -> CaomEntity "a component of an observation that describes one pro
                     for the main artifacts";
         quality : DataQuality @?  as composition "flag indicating the quality of the data";
         metrics : Metrics @?  as composition "collection of measured quantities that describe the content of the data";
-        position : Position @?  as composition "description of the position(s) included in the data";
+        ^position : Position @?  as composition "description of the position(s) included in the data";
         energy : Energy @?  as composition "descritpion of the energy(ies) included in the data";
         time : Time @?  as composition "description of the time(s) included in the data";
         polarization : Polarization @?  as composition "description of the polarization(s) included in the data";
@@ -241,7 +241,7 @@ otype Chunk  -> CaomEntity "a quantitatively defined subsection of a data array;
         timeAxis: ivoa:integer  @?   "index of the time axis";
         polarizationAxis: ivoa:integer  @?   "index of the polarization axis";
         observableAxis: ivoa:integer  @?   "index of the observable axis";
-        position : wcs.SpatialWCS @?  as composition "spatial WCS description of the data array or subsection thereof";
+        ^position : wcs.SpatialWCS @?  as composition "spatial WCS description of the data array or subsection thereof";
         energy : wcs.SpectralWCS @?  as composition "spectral WCS description of the data array or subsection thereof";
         time : wcs.TemporalWCS @?  as composition "temporal WCS description of the data array or subsection thereof";
         polarization : wcs.PolarizationWCS @?  as composition "polarization WCS description of the data array or subsection thereof";
@@ -599,6 +599,6 @@ otype ObservableAxis
   }
 
 }
-  
 }
+
   

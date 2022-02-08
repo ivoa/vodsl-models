@@ -2,14 +2,14 @@
 model sample (1.0) "This is a sample data model. It contains the IVOA UML Profile and imports the IVOA_Profile data model with primitive types.
 It has some sample relationships etc to be used in documentation etc."
      
-       include "IVOA-v1.0.vodsl"
+       include "https://raw.githubusercontent.com/ivoa/vodsl-models/master/IVOA-v1.0.vodsl"
      
        include "Filter.vodsl"
      
-package catalog  ""
+package catalog 
 {
       
-enum LuminosityType  ""
+enum LuminosityType  "vale"
 {
 magnitude  "",
 flux  ""
@@ -35,29 +35,33 @@ dtype CircleError  -> catalog.SkyError ""
         radius: ivoa:real   "";
   }
 
-dtype GenericEllipse  -> catalog.SkyError ""
-  {   
+dtype GenericEllipse  -> catalog.SkyError "" 
+  {   // constraint  self.major>=self.minor// constraint  self.minor >= 0
         major: ivoa:real   "major axis of error ellipse";
-        minor: ivoa:real   "";
-        pa: ivoa:real  @*   "Position angle of error ellipse in coordinate system of position.";
+        minor: ivoa:real   "minor axis of error ellipse";
+        pa: ivoa:real   "Position angle of error ellipse in coordinate system of position.";
+    
   }
 
 dtype SkyCoordinate  ""
-  {   
+< "0<=self.longitude.value < 360" as Natural>
+< "-90<=self.latitude.value<=90" as Natural>
+  {  
         longitude: ivoa:RealQuantity   "The longitude part of this position in units of degrees.";
         latitude: ivoa:RealQuantity   "The latitude part of this position in units of degrees.";
-        frame  references catalog.SkyCoordinateFrame "";
+        frame  references catalog.SkyCoordinateFrame ""; 
   }
 
 abstract dtype SkyError  "Error of a position on the sky."
   {   
   }
 
+
 abstract otype AbstractSource  -> catalog.AstroObject ""
   {   
         name: ivoa:string   "";
         description: ivoa:string  @?   "";
-        position: catalog.SkyCoordinate   "";
+        ^position: catalog.SkyCoordinate   "";
         positionError: catalog.SkyError  @?   "";
         classification: catalog.SourceClassification   "";
         luminosity : catalog.LuminosityMeasurement @*  as composition "";
@@ -79,11 +83,12 @@ otype LuminosityMeasurement  ""
 
 otype SDSSSource  -> catalog.AbstractSource ""
   {   
+     subset sample:catalog.AbstractSource.positionError  as sample:catalog.AlignedEllipse;
   }
 
 otype SkyCoordinateFrame  ""
   {   
-        name: ivoa:string   "";
+        name: ivoa:string iskey "";
         documentURI: ivoa:anyURI   "";
         equinox: ivoa:string  @?   "";
         system: ivoa:string  @?   "";
@@ -96,7 +101,30 @@ otype Source  -> catalog.AbstractSource ""
 
 otype TwoMassSource  -> catalog.AbstractSource ""
   {   
+     subset AbstractSource.positionError  as sample:catalog.GenericEllipse;
   }
+  
+ package inner {
+ 	
+ otype Testing {
+ 	plain : ivoa:string "a single string";
+ 	arrayIsh : ivoa:string @[3..3] "an array with 3 elements";
+    unbounded : ivoa:string @* "an array with many elements"; 	
+ 	
+ }
+ otype SourceCatalogue 
+ {
+ 	name : ivoa:string "the name of the catalogue";
+ 	entry : catalog:AbstractSource @* as composition "the entries in the catalogue";
+ 	aTest : Testing as composition "try this out";
+ 	aTestMore : Testing @* as composition "a try with more than one";
+    
+ }
+ 
+ 
+}
 
 }
+
+
   

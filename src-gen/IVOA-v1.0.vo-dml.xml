@@ -7,8 +7,8 @@
       <description>This is the main reference data model containing primitive types used in other data models.</description> 
       <uri/>
       <title>TBD</title>
-      <version>1.1</version>
-      <lastModified>2021-09-10T17:49:38Z</lastModified>
+      <version>1.0</version>
+      <lastModified>2021-10-12T16:46:06Z</lastModified>
       <primitiveType>
         <vodml-id>Unit</vodml-id>
         <name>Unit</name>
@@ -23,6 +23,11 @@
         <vodml-id>boolean</vodml-id>
         <name>boolean</name>
         <description>The standard boolean, having values true or false.</description>	    
+      </primitiveType>
+      <primitiveType>
+        <vodml-id>complex</vodml-id>
+        <name>complex</name>
+        <description>Represents a complex number, consisting of a real and imaginary component, both of which are reals. Note that in many contexts there is no native mapping for this type and it must be treated with a custom mapping.</description>	    
       </primitiveType>
       <primitiveType>
         <vodml-id>datetime</vodml-id>
@@ -40,6 +45,11 @@
         <description>An integer number from N, therefore greater than or equal to 0.</description>	    
       </primitiveType>
       <primitiveType>
+        <vodml-id>rational</vodml-id>
+        <name>rational</name>
+        <description>A rational number from Q, represented by two integers, a numerator and a denominator. A native mapping to a serialisation context does in general not exists.</description>	    
+      </primitiveType>
+      <primitiveType>
         <vodml-id>real</vodml-id>
         <name>real</name>
         <description>A real number (from R).</description>	    
@@ -49,26 +59,6 @@
         <name>string</name>
         <description>A string, represented as an array of characters treated as a single, primitive value. Ala Java, a string can not be updated, that is any update leads to a different string. However in contrast to Java we assume that two strings that are identical in all their constitutent characters are the same.
         I.e. string has value type semantics.</description>	    
-      </primitiveType>
-      <primitiveType>
-        <vodml-id>identifier</vodml-id>
-        <name>identifier</name>
-        <description>something that an identifier that can be used as a key for lookup of an entity that is *outside this datamodel*</description>	    
-      </primitiveType>
-      <primitiveType>
-        <vodml-id>intIdentifier</vodml-id>
-        <name>intIdentifier</name>
-        <description>an integer identifier</description>	    
-      </primitiveType>
-      <primitiveType>
-        <vodml-id>stringIdentifier</vodml-id>
-        <name>stringIdentifier</name>
-        <description>a string identifier</description>	    
-      </primitiveType>
-      <primitiveType>
-        <vodml-id>ivorn</vodml-id>
-        <name>ivorn</name>
-        <description>an identifier that can be used as a key to look up in an IVOA registry - see https://www.ivoa.net/documents/IVOAIdentifiers/</description>	    
       </primitiveType>
             <dataType>
               <vodml-id>IntegerQuantity</vodml-id>
@@ -80,7 +70,7 @@
             <attribute>
               <vodml-id>IntegerQuantity.value</vodml-id>
               <name>value</name>
-              <description></description>	    
+              <description>The integer value of this IntegerQuantity.</description>	    
               <datatype>
                  <vodml-ref>ivoa:integer</vodml-ref>
               </datatype>
@@ -99,7 +89,7 @@
             <attribute>
               <vodml-id>Quantity.unit</vodml-id>
               <name>unit</name>
-              <description></description>	    
+              <description>The unit of this  quantity.</description>	    
               <datatype>
                  <vodml-ref>ivoa:Unit</vodml-ref>
               </datatype>
@@ -119,67 +109,9 @@
             <attribute>
               <vodml-id>RealQuantity.value</vodml-id>
               <name>value</name>
-              <description></description>	    
+              <description>The real value of this quantity</description>	    
               <datatype>
                  <vodml-ref>ivoa:real</vodml-ref>
-              </datatype>
-              <multiplicity>
-                <minOccurs>1</minOccurs>
-                <maxOccurs>1</maxOccurs>
-              </multiplicity>
-            </attribute>
-            </dataType>
-            <dataType>
-              <vodml-id>complex</vodml-id>
-              <name>complex</name>
-              <description>Represents a complex number, consisting of a real and imaginary component, both of which are reals. Note that in many contexts there is no native mapping for this type and it must be treated with a custom mapping.</description>	    
-            <attribute>
-              <vodml-id>complex.re</vodml-id>
-              <name>re</name>
-              <description>The real part of the complex number.</description>	    
-              <datatype>
-                 <vodml-ref>ivoa:real</vodml-ref>
-              </datatype>
-              <multiplicity>
-                <minOccurs>1</minOccurs>
-                <maxOccurs>1</maxOccurs>
-              </multiplicity>
-            </attribute>
-            <attribute>
-              <vodml-id>complex.im</vodml-id>
-              <name>im</name>
-              <description>The imaginary part of the complex number.</description>	    
-              <datatype>
-                 <vodml-ref>ivoa:real</vodml-ref>
-              </datatype>
-              <multiplicity>
-                <minOccurs>1</minOccurs>
-                <maxOccurs>1</maxOccurs>
-              </multiplicity>
-            </attribute>
-            </dataType>
-            <dataType>
-              <vodml-id>rational</vodml-id>
-              <name>rational</name>
-              <description>A rational number from Q, represented by two integers, a numerator and a denominator. A native mapping to a serialisation context does in general not exists.</description>	    
-            <attribute>
-              <vodml-id>rational.numerator</vodml-id>
-              <name>numerator</name>
-              <description>The numerator of the quotient defining the rational.</description>	    
-              <datatype>
-                 <vodml-ref>ivoa:integer</vodml-ref>
-              </datatype>
-              <multiplicity>
-                <minOccurs>1</minOccurs>
-                <maxOccurs>1</maxOccurs>
-              </multiplicity>
-            </attribute>
-            <attribute>
-              <vodml-id>rational.denominator</vodml-id>
-              <name>denominator</name>
-              <description>The denominator of the rational. Must be greater than 0.</description>	    
-              <datatype>
-                 <vodml-ref>ivoa:nonnegativeInteger</vodml-ref>
               </datatype>
               <multiplicity>
                 <minOccurs>1</minOccurs>

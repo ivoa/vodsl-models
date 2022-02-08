@@ -23,8 +23,8 @@
     	<todsl model="coordsys_tessel" sdir="vo-dml/models/tesselation" />
     	<todsl model="coords_tessel" sdir="vo-dml/models/tesselation" />
     	<todsl model="lmsource" sdir="vo-dml/models/tesselation" />
-    	<todsl model="Sample" sdir="vo-dml/models/sample/sample/"/>
-    	<todsl model="Filter" sdir="vo-dml/models/sample/filter/"/>
+      <todsl model="Sample" sdir="vo-dml/models/sample/sample/vo-dml/"/>
+      <todsl model="Filter" sdir="vo-dml/models/sample/filter/vo-dml/"/>
         <todsl model="DatasetMetadata-1.0" sdir="DatasetMetadata/vo-dml/"/>
         <todsl model="STC_coords-v1.0" sdir="STC/Coords/vo-dml/"/>
         <todsl model="STC_meas-v1.0" sdir="STC/Meas/vo-dml/"/>
@@ -39,13 +39,15 @@
          ================================= -->
     <target name="fewdsl"  description="do a few transformations">
         <todsl model="STC_coords-v1.0" sdir="STC/Coords/vo-dml/"/>
-        <todsl model="STC_meas-v1.0" sdir="STC/Meas/vo-dml/"/>
+      	<xslt style="vo-dml2dsl.xsl" in="/Users/pharriso/Work/ivoa/vo-dml/models/ivoa/vo-dml/IVOA-v1.0.vo-dml.xml" out="IVOA-v1.0.vodsl" force="true" >
+      		<factory name="net.sf.saxon.TransformerFactoryImpl" />      		
+       	</xslt>
  	
     </target>
 	
-	<target name="CAOM" description="CAOM transformation">
+	<target name="single" description="single transformation">
     <!--  <get src="https://www.opencadc.org/caom2/xml/CAOM-2.3-vodml.xml" dest="CAOM.vodml.xml"/> -->
-  	 <xslt style="vo-dml2dsl.xsl" in="CAOM.vodml.xml" out="CAOM.vodsl" force="true">
+  	 <xslt style="vo-dml2dsl.xsl" in="mango.vo-dml.xml" out="mango.vodsl" force="true">
   	 	
   	 	<factory name="net.sf.saxon.TransformerFactoryImpl" />
 	 </xslt>

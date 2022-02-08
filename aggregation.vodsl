@@ -1,0 +1,33 @@
+/*
+ *  created on 8 Feb 2022 
+ */
+ 
+ model aggregation (0.1) "shows how aggregation could work" author "pharriso"
+ 
+ include "IVOA-v1.0.vodsl"
+ 
+ 
+ otype ReferedTo { // this referred to otype is not affected by the lifecycle of other instances in the model 
+ 	test1: ivoa:integer "";
+ }
+ 
+ otype ReferredLifeCycle {
+ 	test3: ivoa:string "";
+ }
+ 
+ 
+ otype Contained "" {
+ 	test2: ivoa:string "";
+ }
+ 
+otype ATest { //this does things as per old rules
+	ref1 references ReferedTo "";
+	contained : Contained @+ as composition "";
+	refandcontained : ReferredLifeCycle @+ as composition "";
+}
+
+otype ATest2 {
+	
+	refagg @+ references ReferedTo  ""; // not liked because of "aggregation pattern", but really ok - it is more a lifecycle matter really
+	refcont @+ references ReferredLifeCycle ""; // OK - the only issue would be if this were contained twice....
+}

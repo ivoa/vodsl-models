@@ -370,7 +370,7 @@ otype ParamHTTP  -> VOResource:Interface "
            the service/referenceURL element.
         "
   {   
-        queryType: HTTPQueryType @[0..2]  "
+        queryType: HTTPQueryType @[2..2]  "
                        The type of HTTP request, either GET or POST.
                       
                        The service may indicate support for both GET

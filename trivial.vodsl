@@ -10,9 +10,7 @@
  otype base "Description"{
  	a : angle "";
  }
- 
- 
-  
+   
  otype deriv -> base "Description" {
  	b : int "" ;
  }
