@@ -11,16 +11,15 @@
  	test1: ivoa:integer "";
  }
  
- otype ReferredLifeCycle {
+ otype ReferredLifeCycle { // this is affected by the lifecycle of the Atest otype
  	test3: ivoa:string "";
- }
- 
+ } 
  
  otype Contained "" {
  	test2: ivoa:string "";
  }
  
-otype ATest { //this does things as per old rules
+otype ATest { //this does things as per current rules
 	ref1 references ReferedTo "";
 	contained : Contained @+ as composition "";
 	refandcontained : ReferredLifeCycle @+ as composition "";
@@ -28,6 +27,15 @@ otype ATest { //this does things as per old rules
 
 otype ATest2 {
 	
-	refagg @+ references ReferedTo  ""; // not liked because of "aggregation pattern", but really ok - it is more a lifecycle matter really
-	refcont @+ references ReferredLifeCycle ""; // OK - the only issue would be if this were contained twice....
+	refagg @+ references ReferedTo  ""; /*  not liked because of "aggregation pattern", but really ok - 
+	                                     it is more a lifecycle matter really - as long as there is nothing that can 
+	                                     * delete the referredTo otype */
+	                                     
+	refcont @+ references ReferredLifeCycle ""; // not OK (perhaps should be an error) - here the referred otype is also contained, so the 
+	}
+
+otype ATest3 { /*  fails the "unique composition rule" in schematron if the one of the Contained instances is also contained in ATest,
+ *  but this should be unlikely if a contained type instance is created at the same time as its container instance.
+	*/
+	contained : Contained @+ as composition ""; //vodsl tooling does not flag this- but the vodml schematron does.
 }
