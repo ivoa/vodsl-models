@@ -1,67 +1,86 @@
-model example (0.1) "an example model"  author "Paul Harrison"
-author "another"
-
-include "IVOA-v1.0.vodsl"
-
-primitive angle "a new primitive"
-
-package apackage "example package"
-{
-	
-	    primitive p2 "another primitive"
-	    
-		dtype fq -> ivoa:Quantity "a new dtype" {
-			value : ivoa:boolean   "a new boolean";
-		}
-		abstract otype base {
-		    bv : ivoa:anyURI  "Description";
-		    ^author: ivoa:string @? "author"; /* note use of ^ to be able to 
-		                                       re-use reserved word.*/	
-		    cc : ivoa:complex "Description";	    
-		}		
-		otype derived -> base {
-			sv : ivoa:RealQuantity "";
-		}
-		
-		dtype myQuant -> ivoa:RealQuantity {
-			ee : ivoa:boolean "" ;
-		}
-		
-		dtype myExpandedQuant -> myQuant {
-			d : ivoa:anyURI "" ;
-		}
-		
-		otype another { 
-			name: ivoa:string iskey "a natural key ";
-			f1 : apackage.fq @[6] "an array";
-			f2 : nestedpackage.another as composition "";
-		}
-		package nestedpackage "nested package"
-		{
-			otype another "same name different package" {//same name different package
-				cc : derived @* as composition "" ;
-				rf references apackage.another "a reference";
-			}
-			otype doublenested -> derived {
-				ssi: ivoa:boolean "" ;
-			}
-		}
-		package nestedpackage2 "nested package"
-		{
-			otype another "same name different package" {//same name different package
-				cc : derived @* as composition "" ;
-				rf references apackage.another "a reference";
-			}
-			otype doublenested -> derived {
-				ssi: ivoa:boolean "" ;
-			}
-		}
-// subsetting 		
-		otype derived2 -> derived  "Description"   { 
-			subset derived:sv as myQuant ;
-		}
-// constraint
-		otype constrained {
-			val : ivoa:integer "just using a natural language constraint" < "greater than 5" as Natural> ;
-		}
+/*
+ *  created on 25 Feb 2022 
+ */
+ 
+ model example (0.1) "description here" 
+   author "Paul Harrison"
+   author "An Other"
+   
+   include "IVOA-v1.0.vodsl"
+   
+package p "top level package" {
+	package n "nested package" {
+     primitive angle "another primitive"     
+	}
 }
+   
+enum options "an enum" {
+	val1 "first option",
+	val2 "second option"
+}   
+
+dtype aQuant -> ivoa:Quantity "an angle quantity" {
+			value : p.n.angle  "angle";
+}
+
+abstract otype base {
+		    q : ivoa:Quantity "a quantity";   
+}
+
+abstract otype ad1 -> base "an abstract subtype "{	
+}
+
+otype o1 {
+	     /* the following attribute is a 'natural key' for the otype */
+	       name : ivoa:string iskey "the identifier";
+			   bv : ivoa:anyURI  "Description";
+		    /* note use of ^ to be able to 
+		            re-use reserved word.*/	
+		    ^author: ivoa:string "author"; 
+}
+
+dtype myQuant -> ivoa:RealQuantity "a flagged quantity" {
+			flag : ivoa:boolean "the flag" ;
+}
+
+/* it should be noted in this example that
+ * @* and @+ are not "recommended" for attributes - it 
+   might be better to use composition of otypes - but this is 
+   not always the case */
+otype multiplicities "the @ sign introduces a multiplicity"
+{
+	m1 : ivoa:integer @? "0 or 1";
+	m2 : ivoa:integer @* "0 or many";
+	m3 : ivoa:integer @+ "1 or many";
+	m4 : ivoa:integer @[2] "twice (as an array?)";
+}
+
+ /*  this referred to otype is not affected by the lifecycle
+   of other instances in the model */
+ otype ReferedTo { 
+ 	test1: ivoa:integer "";
+ }
+
+/* instances of this contained class will only live
+   as long as the containing instance.  */
+otype Contained  {
+ 	test2: ivoa:string "";
+ }
+ 
+/* this example references and contains the above types */
+otype RCTest { 
+	ref references ReferedTo "";
+	contained : Contained @+ as composition "";
+}
+
+/* an example of subsetting */
+otype subs -> base {
+	/* note that the requirement to refer to the q attribute of base */
+   subset base.q as myQuant; //the type of base.q is a supertype of myQuant
+}
+
+/* an example of the syntax for a constraint */
+otype constrained {
+			val : ivoa:integer "just using a natural language constraint" 
+			  < "greater than 5" as Natural> ;
+		}
