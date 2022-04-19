@@ -2,12 +2,11 @@
  *  created on 8 Feb 2022 
  */
  
- model aggregation (0.1) "shows how aggregation could work" author "pharriso"
+ model lifecycleTest (0.1) "shows how lifecycles/aggregation could work" author "pharriso"
  
  include "IVOA-v1.0.vodsl"
- 
- 
- otype ReferedTo { // this referred to otype is not affected by the lifecycle of other instances in the model 
+  
+ otype ReferredTo { // this referred to otype is not affected by the lifecycle of other instances in the model 
  	test1: ivoa:integer "";
  }
  
@@ -20,14 +19,14 @@
  }
  
 otype ATest { //this does things as per current rules
-	ref1 references ReferedTo "";
+	ref1 references ReferredTo "";
 	contained : Contained @+ as composition "";
 	refandcontained : ReferredLifeCycle @+ as composition "";
 }
 
 otype ATest2 {
 	
-	refagg @+ references ReferedTo  ""; /*  not liked because of "aggregation pattern", but really ok - 
+	refagg @+ references ReferredTo  ""; /*  not liked because of "aggregation pattern", but really ok - 
 	                                     it is more a lifecycle matter really - as long as there is nothing that can 
 	                                     * delete the referredTo otype */
 	                                     
