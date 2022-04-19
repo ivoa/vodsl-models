@@ -96,11 +96,13 @@ Allows coarse description of the provenance."
 
 otype ValueEntity  -> Entity "An entity that only contains a value. The way to interpret this value is described in the ValueDescription instance it linked to."
   {   
+     subset Entity.entityDescription as voprov:ValueDescription;
         value: ivoa:string   "The value of the Entity.";
   }
 
 otype DatasetEntity  -> Entity "An Entity which represents a data file in the Provenance system. It is not the data file itself"
   {   
+     subset Entity.entityDescription as voprov:DatasetDescription;
   }
 
 otype ActivityDescription  "Gives further information on how an activity works internally."
