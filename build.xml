@@ -38,9 +38,9 @@
           target: fewdsl              
          ================================= -->
     <target name="fewdsl"  description="do a few transformations">
-        <get src="https://raw.githubusercontent.com/ivoa-std/ProvenanceDM/master/model/Provenance.vo-dml.xml"
+        <get src="https://raw.githubusercontent.com/opencadc/caom2/master/caom2-dm/src/main/resources/CAOM-2.4-vodml.xml"
              dest="/tmp/file.vo-dml.xml" />
-      	<xslt style="vo-dml2dsl.xsl" in="/tmp/file.vo-dml.xml" out="Provenance.vodsl" force="true" >
+      	<xslt style="vo-dml2dsl.xsl" in="/tmp/file.vo-dml.xml" out="CAOM.vodsl" force="true" >
       		<factory name="net.sf.saxon.TransformerFactoryImpl" />      		
        	</xslt>
  	
