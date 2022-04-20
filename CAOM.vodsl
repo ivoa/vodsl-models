@@ -1,9 +1,8 @@
 
 model caom2 (2.4) "a general purpose data model for use as the core data model of an astronomical data centre"
      
-<>
  author "Patrick Dowler, Canadian Astronomy Data Centre"
-       include "IVOA-v1.vodsl"
+       include "IVOA-v1.0.vodsl"
      
     primitive uuid  "represents a 128-bit binary ID in the canonical ascii UUID format"
 package caom2  "this package contains the CAOM object types and enumerations"
@@ -86,7 +85,7 @@ abstract dtype VocabularyTerm  "base class of a single term (word) in a vocabula
   {   
         namespace: ivoa:anyURI   "globally unique namespace for the vocabulary";
         term: ivoa:string   "the word from the vocabulary";
-        term: ivoa:boolean   "flag indicating of the vocabulary namespace is a base vocabulary";
+        base: ivoa:boolean   "flag indicating of the vocabulary namespace is a base vocabulary";
   }
 
 abstract dtype DataProductType  -> VocabularyTerm "vocabulary term used in CAOM; this class defines constants for the CAOM
@@ -277,17 +276,17 @@ otype Chunk  -> CaomEntity "a quantitatively defined subsection of a data array;
         polarizationAxis: ivoa:integer  @?   "index of the polarization axis; if set: polarization must have a value";
         customAxis: ivoa:integer  @?   "index of the custom axis; if set: custom must have a value";
         observableAxis: ivoa:integer  @?   "index of the observable axis; if set: observable must have a value";
-        position : SpatialWCS @?  as composition "spatial WCS description of the data array or subsection thereof; if positionAxis1 and positionAxis2 indices are null
+        position : wcs.SpatialWCS @?  as composition "spatial WCS description of the data array or subsection thereof; if positionAxis1 and positionAxis2 indices are null
                     or have values above {naxis}, then the spatial WCS is metadata only (usually the degenerate case of one spatial pixel)";
-        energy : SpectralWCS @?  as composition "spectral WCS description of the data array or subsection thereof; if energyAxis index is null or has a value
+        energy : wcs.SpectralWCS @?  as composition "spectral WCS description of the data array or subsection thereof; if energyAxis index is null or has a value
                     above {naxis}, then the spectral WCS is metadata only (usually the degenerate case of one spectral pixel)";
-        time : TemporalWCS @?  as composition "temporal WCS description of the data array or subsection thereof; if timeAxis index is null or has a value
+        time : wcs.TemporalWCS @?  as composition "temporal WCS description of the data array or subsection thereof; if timeAxis index is null or has a value
                     above {naxis}, then the time WCS is metadata only (usually the degenerate case of one time pixel for the whole data array)";
-        polarization : PolarizationWCS @?  as composition "polarization WCS description of the data array or subsection thereof; if polarizationAxis index is null or has a value
+        polarization : wcs.PolarizationWCS @?  as composition "polarization WCS description of the data array or subsection thereof; if polarizationAxis index is null or has a value
                     above {naxis}, then the polarization WCS is metadata only (usually the degenerate case of one polarization pixel)";
-        custom : CustomWCS @?  as composition "custom WCS description of the data array or subsection thereof; if customAxis index is null or has a value
+        custom : wcs.CustomWCS @?  as composition "custom WCS description of the data array or subsection thereof; if customAxis index is null or has a value
                     above {naxis}, then the custom WCS is metadata only (usually the degenerate case of one custom pixel)";
-        observable : ObservableAxis @?  as composition "observable description of the data array or subsection thereof; if observableAxis index is null or has a value
+        observable : wcs.ObservableAxis @?  as composition "observable description of the data array or subsection thereof; if observableAxis index is null or has a value
                     above {naxis}, then the observable axis is metadata only (usually the degenerate case of one observable for the whole data array)";
   }
 
@@ -372,7 +371,7 @@ otype TargetPosition  "the intended position of the observation
   {   
         coordsys: ivoa:string   "the coordinate system of the coordinates";
         equinox: ivoa:real  @?   "the equinox of the coordinates";
-        coordinates: Point   "the coordinates";
+        coordinates: types.Point   "the coordinates";
   }
 
 otype Requirements  "the observational requirements specified by the proposal"
@@ -420,10 +419,10 @@ otype Metrics  "collection of measured quantities that describe the content of t
 
 otype Position  "description of the position coverage and sampling of the data"
   {   
-        bounds: Shape  @?   "spatial boundary that includes the data";
-        dimension: Dimension2D  @?   "number of separate measurements (pixels) along each axis";
+        bounds: types.Shape  @?   "spatial boundary that includes the data";
+        dimension: wcs.Dimension2D  @?   "number of separate measurements (pixels) along each axis";
         resolution: ivoa:real  @?   "median spatial resolution (full-width-half-max) per pixel";
-        resolutionBounds: Interval  @?   "range of resolution within the bounds";
+        resolutionBounds: types.Interval  @?   "range of resolution within the bounds";
         sampleSize: ivoa:real  @?   "median pixel size";
         timeDependent: ivoa:boolean  @?   "indicates that the observation was taken with non-siderial tracking so
                     the resulting position is time-dependent; this usually explains why no bounds is
@@ -432,24 +431,24 @@ otype Position  "description of the position coverage and sampling of the data"
 
 otype Energy  "description of the energy coverage and sampling of the data"
   {   
-        bounds: SampledInterval  @?   "energy bounds that include the data (barycentric vacuum wavelength)";
+        bounds: types.SampledInterval  @?   "energy bounds that include the data (barycentric vacuum wavelength)";
         energyBands: EnergyBand  @*   "standard name of the energy regime(s) included in the data (attribute name 
                     and cardinality changed in CAOM-2.4)";
         dimension: ivoa:integer  @?   "number of measurements (pixels) on the energy axis";
         resolvingPower: ivoa:real  @?   "median spectral resolving power per pixel";
-        resolvingPowerBounds: Interval  @?   "range of resolving power within the bounds";
+        resolvingPowerBounds: types.Interval  @?   "range of resolving power within the bounds";
         sampleSize: ivoa:real  @?   "median pixel size";
         bandpassName: ivoa:string  @?   "telescope- and instrument-specific name for the energy band included";
-        transition: EnergyTransition  @?   "target energy transition for this data";
+        transition: wcs.EnergyTransition  @?   "target energy transition for this data";
         restwav: ivoa:real  @?   "rest wavelength of the target energy transition";
   }
 
 otype Time  "description of the time coverage and sampling of the data"
   {   
-        bounds: SampledInterval  @?   "time bounds that include the data";
+        bounds: types.SampledInterval  @?   "time bounds that include the data";
         dimension: ivoa:integer  @?   "number of measurements (pixels) on the time axis";
         resolution: ivoa:real  @?   "median temporal resolution per pixel";
-        resolutionBounds: Interval  @?   "range of resolution within the bounds";
+        resolutionBounds: types.Interval  @?   "range of resolution within the bounds";
         sampleSize: ivoa:real  @?   "median pixel size";
         exposure: ivoa:real  @?   "median exposure time per pixel";
   }
@@ -463,7 +462,7 @@ otype Polarization  "description of polarization measurements included in the da
 otype CustomAxis  "description of a custom coordinate axis (new in CAOM-2.4)"
   {   
         ctype: ivoa:string   "coordinate type code";
-        bounds: SampledInterval  @?   "custom coordinate bounds";
+        bounds: types.SampledInterval  @?   "custom coordinate bounds";
         dimension: ivoa:integer  @?   "number of samples along custom axis";
   }
 
@@ -472,13 +471,13 @@ package types  "data types"
       
 dtype Point 
   {   
-        cval1: ivoa:real  ;
-        cval1: ivoa:real  ;
+        cval1: ivoa:real "" ;
+        cval2: ivoa:real "" ;
   }
 
 dtype Vertex  -> Point
   {   
-        type: SegmentType  ;
+        type: SegmentType "" ;
   }
 
 abstract dtype Shape 
@@ -487,33 +486,33 @@ abstract dtype Shape
 
 dtype Circle  -> Shape "a circular region on the sky"
   {   
-        center: Point  ;
-        radius: ivoa:real  ;
+        center: Point "" ;
+        radius: ivoa:real "" ;
   }
 
 dtype MultiPolygon  "a region on the sky defined a sequence of points connected by great-circle segments; each simple polygon is
                 is terminated by a special type of vertex and multiple simple polygons are permitted to describe disconnected regions as
                 a single value"
   {   
-        vertices: Vertex @[3..-1] ;
+        vertices: Vertex @[3..-1] "" ;
   }
 
 dtype Polygon  -> Shape "a simple polygon region on the sky defined a sequence of points connected by great-circle segments"
   {   
-        points: Point @[3..-1] ;
-        samples: MultiPolygon  ;
+        points: Point @[3..-1] "";
+        samples: MultiPolygon  "";
   }
 
 dtype Interval  "a set of numeric values defined by a lower and upper bound (bounds included: [a,b])"
   {   
-        lower: ivoa:real  ;
-        upper: ivoa:real  ;
+        lower: ivoa:real "" ;
+        upper: ivoa:real "" ;
   }
 
 dtype SampledInterval  "an interval with (possibly sparse) sub-sampling"
   {   
-        lower: ivoa:real  ;
-        upper: ivoa:real  ;
+        lower: ivoa:real "" ;
+        upper: ivoa:real  "" ;
         samples: Interval  @+   "the samples within an interval describe possible holes in the interval; in the simple case there is 
                     one sample that is identical to the outer interval; samples within an interval are not allowed to overlap 
                         (TBD: the bounds of adjacent samples may be equal?)";
@@ -526,26 +525,26 @@ package wcs  "World Coordinate System (WCS) data types"
       
 dtype Axis  "one-dimensional coordinate axis description"
   {   
-        ctype: ivoa:string  ;
-        ctype: ivoa:string  @?  ;
+        ctype: ivoa:string "" ;
+        cunit: ivoa:string  @? "" ;
   }
 
 dtype Dimension2D  "dimension (number of pixels) for a two-dimensional axis"
   {   
-        naxis1: ivoa:integer  ;
-        naxis2: ivoa:integer  ;
+        naxis1: ivoa:integer "" ;
+        naxis2: ivoa:integer "" ;
   }
 
 dtype RefCoord  "a reference coordinate with a pixel and cooresponding world coordinate value"
   {   
-        pix: ivoa:real  ;
-        val: ivoa:real  ;
+        pix: ivoa:real "" ;
+        val: ivoa:real "" ;
   }
 
 dtype CoordError  "coordinate error from FITS WCS"
   {   
-        crder: ivoa:real  @?  ;
-        csyer: ivoa:real  @?  ;
+        crder: ivoa:real  @? "" ;
+        csyer: ivoa:real  @? "" ;
   }
 
 dtype Slice  "a one-dimensional subset of a two-dimensional array"
@@ -562,19 +561,19 @@ dtype EnergyTransition
 
 dtype Coord2D  "a two-dimensional (pair) of reference coordinates"
   {   
-        coord1: RefCoord  ;
-        coord2: RefCoord  ;
+        coord1: RefCoord "" ;
+        coord2: RefCoord "" ;
   }
 
 dtype CoordRange1D  "a one-dimensional range of reference coordinates"
   {   
-        start: RefCoord  ;
-        end: RefCoord  ;
+        start: RefCoord "" ;
+        end: RefCoord "" ;
   }
 
 dtype CoordBounds1D  "a one-dimensional sequence of reference coordinate ranges"
   {   
-        vertices: CoordRange1D  @+  ;
+        vertices: CoordRange1D  @+ "" ;
   }
 
 dtype CoordFunction1D  "a one-dimensional (linear) WCS coordinate transformation function"
