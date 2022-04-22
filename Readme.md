@@ -18,8 +18,7 @@ In general these models are still in active development and so errors and incons
 to be expected.
 
 The models have been translated from the [volute repository](https://volute.g-vo.org/svn/trunk/projects/dm/vo-dml/models) VO-DML
-representation using the XSLT [vo-dml2dsl.xsl](./vo-dml2dsl.xsl) - the [ant build file](./build.xml) can be
-used to redo this translation (and see exactly which original sources have been used). 
+representation using the XSLT [vo-dml2dsl.xsl](https://github.com/ivoa/vo-dml/blob/master/tools/xslt/vo-dml2dsl.xsl)
 In some cases, minor edits have been made to the 
 generated VODSL files to correct obvious errors in the original source.
 
