@@ -26,7 +26,7 @@ The fundamental model that should included within all of the other models is the
 [IVOA-v1.0.vodsl](./IVOA-v1.0.vodsl) model to make the models IVOA compliant.
 
 
-###STC
+### STC
 
 It should be noted that there are several versions of STC present 
 

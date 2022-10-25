@@ -30,7 +30,7 @@ otype ATest2 {
 	                                     it is more a lifecycle matter really - as long as there is nothing that can 
 	                                     * delete the referredTo otype */
 	                                     
-	refcont @+ references ReferredLifeCycle ""; // not OK (perhaps should be an error) - here the referred otype is also contained, so the 
+	refcont references ReferredLifeCycle ""; // potentially not OK (perhaps should be an error) - here the referred otype is also contained, so the 
 	}
 
 otype ATest3 { /*  fails the "unique composition rule" in schematron if the one of the Contained instances is also contained in ATest,

@@ -116,7 +116,7 @@ otype TwoMassSource  -> catalog.AbstractSource ""
  {
  	name : ivoa:string "the name of the catalogue";
  	entry : catalog:AbstractSource @* as composition "the entries in the catalogue";
- 	aTest : Testing as composition "try this out";
+ 	aTest : Testing @? as composition "try this out";
  	aTestMore : Testing @* as composition "a try with more than one";
     
  }

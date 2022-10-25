@@ -56,9 +56,29 @@ dtype PhysicalCoordinate  -> Coordinate "The most common type of coordinate valu
         cval: ivoa:Quantity   "This coordinate MUST contain a value expressed as an ivoa:Quantity.";
   }
 
-dtype Point  -> Coordinate "Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys).  The coordinate values map, in order, to the axes described by the associated CoordSpace.  Values for unused/undefined dimensions need not be provided."
+abstract dtype Point  -> Coordinate "Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys) which associates the point with corresponding coordinate domain space and frame metadata."
   {   
      subset coords:Coordinate.coordSys as coords:SpaceSys;
+  }
+
+dtype CartesianPoint  -> Point "A spatial coordinate in a Cartesian coordinate space.  Any associated CoordSpace MUST be a CartesianCoordSpace.  If no CoordSpace is provided, a Standard Cartesian CoordSpace is assumed.  Values for unused/undefined dimensions need not be provided.
+"
+  {   
+        x: ivoa:Quantity  @?   "The coordinate value along the 'X' axis.";
+        y: ivoa:Quantity  @?   "The coordinate value along the 'Y' axis.";
+        z: ivoa:Quantity  @?   "The coordinate value along the 'Z' axis.";
+  }
+
+dtype LonLatPoint  -> Point "A spatial coordinate in a Spherical coordinate space defining a Celestial position in Latitude and Longitude.  Any associated CoordSpace MUST conform to this description.  If no CoordSpace is provided, a Standard Spherical CoordSpace is assumed.  Values for unused/undefined dimensions need not be provided.
+"
+  {   
+        lon: ivoa:Quantity  @?   "The longitude of the Point, as a Quantity with angular units.";
+        lat: ivoa:Quantity  @?   "The latitude of the Point, as a Quantity with angular units.";
+        dist: ivoa:Quantity  @?   "The distance to the Point from the origin.";
+  }
+
+dtype GenericPoint  -> Point "GenericPoint supports the representation of spatial coordinates in a custom coordinate space, or any space which is not covered by the other specializations.   The coordinate values map, in order, to the axes described by the associated CoordSpace.  If no CoordSpace is provided, the behavior is undefined.  Values for unused/undefined dimensions need not be provided."
+  {   
         axis1: ivoa:Quantity  @?   "Coordinate value along the first axis of the associated coordinate space, expressed as an ivoa:Quantity.";
         axis2: ivoa:Quantity  @?   "Coordinate value along the second axis of the associated coordinate space, expressed as an ivoa:Quantity.";
         axis3: ivoa:Quantity  @?   "Coordinate value along the third axis of the associated coordinate space, expressed as an ivoa:Quantity.";
