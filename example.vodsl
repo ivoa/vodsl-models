@@ -2,7 +2,7 @@
  *  created on 25 Feb 2022 
  */
  
- model example (0.1) "description here" 
+ model example (0.1) "An example data model showing the constructs available" 
    author "Paul Harrison"
    author "An Other"
    
