@@ -31,9 +31,12 @@ package topl "top level package"
 				m1 : ivoa:integer @? "0 or 1";
 				m2 : ivoa:integer @* "0 or many ** not advised for attribute";
 				m3 : ivoa:integer @+ "1 or many ** not advised for attribute";
-				m4 : ivoa:integer @[2] "two (as an array?)";
+				m4 : ivoa:integer @[2] "two (as an array?)"; // arrays are not explicitly supported
 				m5 : ivoa:integer @[2 .. 2] "any semantic difference to above? perhaps indicates not implemented as array?";
 				m6 : ivoa:integer @[3 .. 2] "should be an error for anything";
+				r1  @? references osample "optional ok for reference";
+				r2 @* references osample "an aggregation"; // but should 0 be allowed?
+				r3 @+ references osample "this is an aggregation"; //OK really?
 				
 			}
 
